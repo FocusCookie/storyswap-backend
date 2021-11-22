@@ -4,7 +4,7 @@ module.exports = function (err, req, res, next) {
   if (!err) {
     next();
   } else {
-    debug("%o", err);
+    debug("%s", err);
     res.status(err.status || 500).send("Opps! " + err.message);
   }
 };
