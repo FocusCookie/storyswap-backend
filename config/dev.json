@@ -1,0 +1,7 @@
+{
+  "name": "StorySwap - Development",
+  "environment": "dev",
+  "database": {
+    "host": "mongoUrl"
+  }
+}

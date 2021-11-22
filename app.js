@@ -4,39 +4,47 @@ require("dotenv").config();
 const https = require("https");
 const http = require("http");
 const app = express();
-const host = process.env.DEV_SERVER_HOST;
-const httpsPort = process.env.DEV_SERVER_HTTPS_PORT;
-const httpPort = process.env.DEV_SERVER_HTTP_PORT;
+const cors = require("cors");
+const helmet = require("helmet");
+const config = require("config");
+
 const httpsKey = fs.readFileSync("./certificates/server.key");
 const httpsCert = fs.readFileSync("./certificates/server.cert");
 
-//check for https request if not redirect to https
-app.all("*", ensureHttps); // at top of routing calls
+const ensureHttps = require("./middleware/ensureHttps.js");
+const debug = require("./middleware/debuger.js");
+const startup = require("debug")("APP");
 
-function ensureHttps(req, res, next) {
-  if (req.secure) {
-    // OK, continue
-    return next();
-  }
+console.log(config);
 
-  // heroku check
-  if (req.headers["x-forwarded-proto"] === "https") {
-    // OK, continue
-    return next();
-  }
+app.use(helmet());
+app.use(cors()); // remove if frontend is hosted via backend, otherwise restrict cors to a whitelist
 
-  // handle port numbers if you need non defaults
-  // res.redirect('https://' + req.host + req.url); // express 3.x
-  res.redirect(`https://${req.hostname}:${httpsPort}${req.url}`); // express 4.x
-}
+// Middlewares
+app.all("*", debug.requests);
+app.all("*", ensureHttps);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-http.createServer(app).listen(httpPort, host, () => {
-  console.log(`Example app listening at http://${host}:${httpPort}`);
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  const err = new Error("Not Found");
+  console.log(err);
+  err.status = 404;
+  res.send("Route not found");
+  next(err);
+  //TODO:ERROR HANDLER
 });
+
+http
+  .createServer(app)
+  .listen(config.server.httpPort, config.server.host, () => {
+    startup(
+      `Example app listening at http://${config.server.host}:${config.server.httpPort}`
+    );
+  });
 
 https
   .createServer(
@@ -46,6 +54,8 @@ https
     },
     app
   )
-  .listen(httpsPort, host, () => {
-    console.log(`Example app listening at https://${host}:${httpsPort}`);
+  .listen(config.server.httpsPort, config.server.host, () => {
+    startup(
+      `Example app listening at https://${config.server.host}:${config.server.httpsPort}`
+    );
   });

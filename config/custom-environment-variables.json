@@ -1,0 +1,7 @@
+{
+  "server": {
+    "host": "SERVER_HOST",
+    "httpPort": "SERVER_HTTP_PORT",
+    "httpsPort": "SERVER_HTTPS_PORT"
+  }
+}
