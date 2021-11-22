@@ -15,6 +15,8 @@ const startup = require("debug")("APP");
 // Middlewares
 app.all("*", ensureHttps);
 
+require("./start/session")(app);
+require("./start/auth0")(app);
 require("./start/routes")(app);
 
 http

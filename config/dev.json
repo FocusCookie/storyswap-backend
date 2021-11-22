@@ -3,5 +3,10 @@
   "environment": "dev",
   "database": {
     "host": "mongoUrl"
+  },
+  "session": {
+    "cookie": {},
+    "resave": false,
+    "saveUninitialized": true
   }
 }
