@@ -1,0 +1,22 @@
+{
+  "name": "storyswap-backend",
+  "version": "1.0.0",
+  "description": "The backend of the book sharing application storyswap.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FocusCookie/storyswap-backend.git"
+  },
+  "keywords": [
+    "backend"
+  ],
+  "author": "Stephan Lüddemann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FocusCookie/storyswap-backend/issues"
+  },
+  "homepage": "https://github.com/FocusCookie/storyswap-backend#readme"
+}
