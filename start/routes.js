@@ -30,10 +30,9 @@ module.exports = function (app) {
 
   app.use(userInViews());
   app.use("/", authRouter);
-  app.use("/", indexRouter);
-  app.use("/", usersRouter);
-
+  app.use("/user", usersRouter);
   app.use("/test", test);
+  app.use("/", indexRouter);
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {

@@ -1,4 +1,6 @@
 {
+  "watch": ["*"],
+  "ex": "js",
   "ignore": ["*.test.js", "fixtures/*", ".git", "node_modules/**/node_modules"],
   "verbose": true,
   "events": {
