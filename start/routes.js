@@ -5,12 +5,11 @@ const cors = require("cors");
 const error = require("../middleware/error");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const jwt = require("express-jwt");
+const jwks = require("jwks-rsa");
 
 const test = require("../routes/test");
-const userInViews = require("../middleware/userInViews");
-const authRouter = require("../routes/auth");
 const indexRouter = require("../routes/index");
-const usersRouter = require("../routes/users");
 
 module.exports = function (app) {
   app.use(express.json());
@@ -24,13 +23,21 @@ module.exports = function (app) {
   // parse application/json
   app.use(bodyParser.json());
 
-  /*   app.get("/", (req, res) => {
-    res.send("Hello World!");
-  }); */
+  // JWT
+  const checkForValidJwt = jwt({
+    secret: jwks.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: "https://storyswap.eu.auth0.com/.well-known/jwks.json",
+    }),
+    audience: "https://api.storyswap.app",
+    issuer: "https://storyswap.eu.auth0.com/",
+    algorithms: ["RS256"],
+  });
 
-  app.use(userInViews());
-  app.use("/", authRouter);
-  app.use("/user", usersRouter);
+  app.use(checkForValidJwt);
+
   app.use("/test", test);
   app.use("/", indexRouter);
 

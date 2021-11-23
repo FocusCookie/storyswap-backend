@@ -5,6 +5,6 @@ module.exports = function (err, req, res, next) {
     next();
   } else {
     debug("%s", err);
-    res.status(err.status || 500).send("Opps! " + err.message);
+    res.status(err.status || 500).send(err.message);
   }
 };
