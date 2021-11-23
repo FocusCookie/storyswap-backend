@@ -1,0 +1,16 @@
+{
+  "server": {
+    "host": "SERVER_HOST",
+    "httpPort": "SERVER_HTTP_PORT",
+    "httpsPort": "SERVER_HTTPS_PORT"
+  },
+  "auth0": {
+    "clientId": "AUTH0_CLIENT_ID",
+    "domain": "AUTH0_DOMAIN",
+    "clientSecret": "AUTH0_CLIENT_SECRET",
+    "callbackURL": "AUTH0_CALLBACK_URL"
+  },
+  "session": {
+    "secret": "SESSION_SECRET"
+  }
+}
