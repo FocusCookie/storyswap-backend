@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const debug = require("debug")("ROUTES:landing");
-const config = require("config");
+const debug = require("debug")("DEV:TEST-JS");
 
 router.get("/", (req, res) => {
-  if (config.util.getEnv("NODE_ENV").startsWith("dev")) debug("test test");
+  debug(req.user);
   res.send("test 123");
 });
 
