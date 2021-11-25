@@ -1,10 +1,12 @@
 const isbndb = require("../../../services/isbndb");
 
-const delayNextApiCall = new Promise(function (resolve, reject) {
-  setTimeout(function () {
-    resolve(true);
-  }, 1500);
-});
+const delayNextApiCall = () => {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve(true);
+    }, 1500);
+  });
+};
 
 describe("ISBN DB API", () => {
   describe("getBookByIsbnOrIsbn13", () => {
@@ -36,14 +38,10 @@ describe("ISBN DB API", () => {
     });
 
     it("should return Harry Potter und der Stein der Weisen with the given isbn 9783551551672", async () => {
-      try {
-        const book = await isbndb.getBookByIsbnOrIsbn13("9783551551672");
+      const book = await isbndb.getBookByIsbnOrIsbn13("9783551551672");
 
-        expect(book.title).toBe("Harry Potter und der Stein der Weisen");
-        await delayNextApiCall();
-      } catch (error) {
-        console.log(error);
-      }
+      expect(book.title).toBe("Harry Potter und der Stein der Weisen");
+      await delayNextApiCall();
     });
   });
 });

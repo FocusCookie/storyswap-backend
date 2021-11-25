@@ -2,10 +2,20 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const BookSchema = new Schema({
-  title: { type: String },
+  title: { type: String, required: true },
   title_long: { type: String },
-  isbn: { type: String },
-  isbn13: { type: String },
+  isbn: {
+    type: String,
+    min: [9, "ISBN needs to be at least 9 chars"],
+    max: [10, "ISBN can has max. 10 chars"],
+    required: true,
+  },
+  isbn13: {
+    type: String,
+    min: [9, "ISBN13 needs to be 13 chars"],
+    max: [13, "ISBN13 can has max. 13 chars"],
+    required: true,
+  },
   dewey_decimal: { type: String },
   binding: { type: String },
   publisher: { type: String },

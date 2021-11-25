@@ -16,13 +16,17 @@ module.exports.getBookByIsbnOrIsbn13 = async (isbnOrIsbn13) => {
     if (!isbnOrIsbn13) throw new Error("invalid isbnOrIsbn13");
 
     const onlyNumbersAndDashRegex = /^[0-9-]*$/;
-    if (!isbnOrIsbn13.test(onlyNumbersAndDashRegex))
+    if (!onlyNumbersAndDashRegex.test(isbnOrIsbn13))
       throw new Error("invalid isbnOrIsbn13");
 
-    const response = await instance.get(`book/${isbn}`);
+    const response = await instance.get(`book/${isbnOrIsbn13}`);
+    const book = response.data.book;
 
-    return response.book;
+    debug(book);
+
+    return book;
   } catch (error) {
+    debug("%s", error);
     throw new Error("ISBN API: ", error.message);
   }
 };
