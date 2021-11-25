@@ -1,12 +1,4 @@
 {
   "name": "StorySwap - Development",
-  "environment": "dev",
-  "database": {
-    "host": "mongoUrl"
-  },
-  "session": {
-    "cookie": {},
-    "resave": false,
-    "saveUninitialized": true
-  }
+  "environment": "dev"
 }

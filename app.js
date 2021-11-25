@@ -1,10 +1,12 @@
 const fs = require("fs");
 const express = require("express");
-require("dotenv").config();
 const https = require("https");
 const http = require("http");
 const app = express();
+require("dotenv").config();
 const config = require("config");
+
+require("./init/mongodb");
 
 const httpsKey = fs.readFileSync("./certificates/server.key");
 const httpsCert = fs.readFileSync("./certificates/server.cert");
@@ -16,7 +18,7 @@ const startup = require("debug")("APP");
 app.all("*", ensureHttps);
 
 // ROUTES
-require("./start/routes")(app);
+require("./init/routes")(app);
 
 http
   .createServer(app)

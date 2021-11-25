@@ -10,7 +10,8 @@
     "clientSecret": "AUTH0_CLIENT_SECRET",
     "callbackURL": "AUTH0_CALLBACK_URL"
   },
-  "session": {
-    "secret": "SESSION_SECRET"
+  "database": {
+    "host": "DB_HOST",
+    "name": "storyswap"
   }
 }
