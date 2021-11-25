@@ -13,7 +13,6 @@ module.exports.getBookByIsbnOrIsbn13 = async (isbnOrIsbn13) => {
     if (!isbnOrIsbn13) throw new Error("invalid isbnOrIsbn13");
     if (isbnOrIsbn13.length < 9 || isbnOrIsbn13.length > 13)
       throw new Error("invalid isbnOrIsbn13");
-    if (!isbnOrIsbn13) throw new Error("invalid isbnOrIsbn13");
 
     const onlyNumbersAndDashRegex = /^[0-9-]*$/;
     if (!onlyNumbersAndDashRegex.test(isbnOrIsbn13))

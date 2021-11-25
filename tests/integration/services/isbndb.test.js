@@ -29,12 +29,8 @@ describe("ISBN DB API", () => {
     });
 
     it("should throw an error with invalid isbn the given isbn includes other chars than numbers and dashes", async () => {
-      await expect(
-        isbndb.getBookByIsbnOrIsbn13("978#3-16-148410-0")
-      ).rejects.toThrow();
-      await expect(
-        isbndb.getBookByIsbnOrIsbn13("WWW#3-16-148410-0")
-      ).rejects.toThrow();
+      await expect(isbndb.getBookByIsbnOrIsbn13("123#14#14")).rejects.toThrow();
+      await expect(isbndb.getBookByIsbnOrIsbn13("WWW42-240")).rejects.toThrow();
     });
 
     it("should return Harry Potter und der Stein der Weisen with the given isbn 9783551551672", async () => {
