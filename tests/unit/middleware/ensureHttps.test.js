@@ -21,7 +21,7 @@ describe("ensureHttps", () => {
     );
   });
 
-  it("should call next https is given", () => {
+  it("should call next https is given - secure:true", () => {
     const res = httpMocks.createResponse();
     const host = "https://localhost";
     const next = jest.fn();
@@ -30,6 +30,23 @@ describe("ensureHttps", () => {
       method: "GET",
       url: "/",
       hostname: host,
+      secure: true,
+    });
+
+    ensureHttps(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it("should call next https is given - x-forwarded-proto:https", () => {
+    const res = httpMocks.createResponse();
+    const host = "https://localhost";
+    const next = jest.fn();
+
+    const req = httpMocks.createRequest({
+      method: "GET",
+      url: "/",
+      hostname: host,
+      headers: { "x-forwarded-proto": "https" },
     });
 
     ensureHttps(req, res, next);
