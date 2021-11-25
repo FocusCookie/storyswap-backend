@@ -1,45 +1,36 @@
 const mongoose = require("mongoose");
+const { User } = requie("./user.js");
 const Schema = mongoose.Schema;
 
-const ExpenseSchema = new Schema({
+const OfferSchema = new Schema({
   provider: {
+    type: User,
+    required: true,
+  },
+  book: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Book",
+    required: true,
+  },
+  zip: {
+    type: Number,
+    required: true,
+  },
+  city: {
     type: String,
     required: true,
   },
-
-  dateCreated: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },
-  sum: {
-    type: Number, // sum will be stored hashed!
-    required: true,
-  },
-  type: {
+  state: {
     type: String,
-    enum: ["monthly", "spontaneous"],
-    default: "spontaneous",
-    required: true,
+    enum: ["pending", "reserved", "deleted", "pickedup"],
+    default: "pending",
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  vault: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Vault",
-    required: true,
-  },
-  sellingPoint: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "SellingPoints",
-    required: true,
-  },
-  // comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
-  // images: [{ type: mongoose.Schema.Types.ObjectId, ref: "Images" }],
 });
 
-const Expense = mongoose.model("Expense", ExpenseSchema);
+const Offer = mongoose.model("Offer", OfferSchema);
 
 module.exports = Expense;
