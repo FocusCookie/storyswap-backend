@@ -16,5 +16,8 @@
   },
   "testing": {
     "authToken": "DEV_AUTH_TOKEN"
+  },
+  "isbndb": {
+    "apiKey": "ISBN_DB_API_KEY"
   }
 }

@@ -5,11 +5,13 @@ Storyswap is a book sharing application.
 # Required ENV File Structure
 
 ```
-NODE_ENV=
+NODE_ENV=dev
 
-DEBUG=
+DEBUG=*,-jwks
 
 DB_HOST=
+
+ISBN_DB_API_KEY=
 
 SERVER_HOST=
 SERVER_HTTP_PORT=
@@ -18,7 +20,9 @@ SERVER_HTTPS_PORT=
 AUTH0_CLIENT_ID=
 AUTH0_DOMAIN=
 AUTH0_CLIENT_SECRET=
-
+AUTH0_CALLBACK_URL=
 
 SESSION_SECRET=
+
+DEV_AUTH_TOKEN=
 ```
