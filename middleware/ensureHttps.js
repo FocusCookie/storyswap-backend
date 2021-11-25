@@ -4,7 +4,7 @@ const config = require("config");
 
 module.exports = (req, res, next) => {
   if (req.secure || req.headers["x-forwarded-proto"] === "https") {
-    return next();
+    next();
   }
 
   redirect(`${req.url}`);

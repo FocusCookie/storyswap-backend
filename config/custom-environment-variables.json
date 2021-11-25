@@ -13,5 +13,8 @@
   "database": {
     "host": "DB_HOST",
     "name": "storyswap"
+  },
+  "testing": {
+    "authToken": "DEV_AUTH_TOKEN"
   }
 }
