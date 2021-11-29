@@ -2,6 +2,7 @@ require("dotenv").config();
 const config = require("config");
 const axios = require("axios");
 const debug = require("debug")("SERVICES:ISBNDB");
+const isbnHelper = require("../helpers/isbn");
 
 const instance = axios.create({
   baseURL: "https://api2.isbndb.com/",
@@ -10,13 +11,8 @@ const instance = axios.create({
 
 module.exports.getBookByIsbnOrIsbn13 = async (isbnOrIsbn13) => {
   try {
-    if (!isbnOrIsbn13) throw new Error("invalid isbnOrIsbn13");
-    if (isbnOrIsbn13.length < 9 || isbnOrIsbn13.length > 13)
-      throw new Error("invalid isbnOrIsbn13");
-
-    const onlyNumbersAndDashRegex = /^[0-9-]*$/;
-    if (!onlyNumbersAndDashRegex.test(isbnOrIsbn13))
-      throw new Error("invalid isbnOrIsbn13");
+    if (!isbnHelper.isValideIsbnOrIsbn13(isbnOrIsbn13))
+      throw new Error("invalid isbn or isbn13");
 
     const response = await instance.get(`book/${isbnOrIsbn13}`);
     const book = response.data.book;
