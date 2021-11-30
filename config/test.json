@@ -1,8 +1,4 @@
 {
-  "environment": "test",
-  "debug": "",
-  "database": {
-    "host": "mongodb://localhost:27017",
-    "name": "dev-storyswap"
-  }
+  "name": "StorySwap - Testenv",
+  "environment": "test"
 }
