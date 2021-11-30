@@ -247,4 +247,32 @@ describe("Book Controller", () => {
       });
     });
   });
+
+  describe("Get a book by id", () => {
+    it("should throw an invalid book id error if the id is not given", async () => {
+      await expect(controller.getBookById()).rejects.toThrow();
+    });
+    it("should throw an invalid book id error if given id is not a string or number", async () => {
+      await expect(controller.getBookById([])).rejects.toThrow();
+      await expect(controller.getBookById({})).rejects.toThrow();
+      await expect(controller.getBookById(true)).rejects.toThrow();
+    });
+    it("should throw an invalid book id error if given id is not a valid object id", async () => {
+      await expect(controller.getBookById("hello world")).rejects.toThrow();
+      await expect(controller.getBookById("123")).rejects.toThrow();
+    });
+
+    it("should return a book from the database if the given id is valid", async () => {
+      const books = await controller.getBooks();
+
+      const selectedBookToCheck = books[0];
+
+      const book = await controller.getBookById(
+        selectedBookToCheck._id.toString()
+      );
+
+      expect(selectedBookToCheck._id).toEqual(book._id);
+      expect(selectedBookToCheck.title).toBe(book.title);
+    });
+  });
 });

@@ -2,6 +2,7 @@ const debug = require("debug")("CONTROLLER:BOOKS");
 const Book = require("../models/book");
 const isbndb = require("../services/isbndb");
 const isbnHelper = require("../helpers/isbn");
+const mongoose = require("mongoose");
 
 const ITEMS_PER_PAGE = 10;
 
@@ -108,4 +109,13 @@ module.exports.getBooks = async (filter, idOfLastFetchedBook) => {
     debug("%s", error);
     throw new Error(error);
   }
+};
+
+module.exports.getBookById = async (id) => {
+  const idIsValid = mongoose.Types.ObjectId.isValid(id);
+  if (!idIsValid) throw new Error("invalid book id");
+
+  const book = await Book.findOne({ _id: id });
+
+  return book;
 };
