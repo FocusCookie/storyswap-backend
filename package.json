@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/FocusCookie/storyswap-backend#readme",
   "dependencies": {
+    "axios": "^0.24.0",
     "body-parser": "^1.19.0",
     "config": "^3.3.6",
     "cookie-parser": "^1.4.6",
@@ -32,7 +33,9 @@
     "express-jwt": "^6.1.0",
     "express-session": "^1.17.2",
     "helmet": "^4.6.0",
+    "joi": "^17.4.2",
     "jwks-rsa": "^2.0.5",
+    "mongodb": "^4.2.0",
     "mongoose": "^6.0.13",
     "morgan": "^1.10.0",
     "passport": "^0.5.0",

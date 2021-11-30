@@ -14,6 +14,10 @@ const httpsCert = fs.readFileSync("./certificates/server.cert");
 const ensureHttps = require("./middleware/ensureHttps.js");
 const startup = require("debug")("APP");
 
+//TODO: move in in init file in init
+const isbnApiKey = config.isbndb.apiKey;
+if (!isbnApiKey) throw new Error("ISBNDB API KEY not setup in env vars");
+
 // Middlewares
 app.all("*", ensureHttps);
 

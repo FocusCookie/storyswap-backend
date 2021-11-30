@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 const error = require("../middleware/error");
 const bodyParser = require("body-parser");
 
-const playground = require("../routes/playground");
+const books = require("../routes/books");
 const indexRouter = require("../routes/index");
 
 module.exports = function (app) {
@@ -19,7 +19,7 @@ module.exports = function (app) {
   app.use(bodyParser.json());
   app.use(auth);
 
-  app.use("/playground", playground);
+  app.use("/books", books);
   app.use("/", indexRouter);
 
   // catch 404 and forward to error handler

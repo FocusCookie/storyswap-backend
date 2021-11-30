@@ -1,4 +1,7 @@
 {
   "name": "StorySwap - Development",
-  "environment": "dev"
+  "environment": "dev",
+  "database": {
+    "name": "storyswap"
+  }
 }

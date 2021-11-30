@@ -3,6 +3,8 @@ require("dotenv").config();
 const config = require("config");
 const debug = require("debug")("INIT:MONGODB");
 
+debug("DB NAME ", config.database.name);
+
 mongoose
   .connect(config.database.host, {
     dbName: config.database.name,
