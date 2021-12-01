@@ -134,7 +134,7 @@ module.exports.books = [
     pages: 256,
     date_published: "2021-09-21T00:00:01Z",
     authors: ["Knapp, Jake;Zeratsky, John"],
-    title: "Make Time: How to focus on what matters every day",
+    title: "Make Time",
     isbn13: "9780593079584",
     msrp: "0.00",
     binding: "Paperback",

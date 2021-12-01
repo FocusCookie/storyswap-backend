@@ -3,6 +3,7 @@ require("dotenv").config();
 const config = require("config");
 const controller = require("../../../controller/offers");
 const bookController = require("../../../controller/books");
+const bookHelper = require("../../../helpers/books");
 const Offer = require("../../../models/offer");
 const { MongoClient } = require("mongodb");
 
@@ -163,7 +164,42 @@ describe("Offers Controller", () => {
       ).rejects.toThrow(/invalid offer update/gi);
     });
 
-    it("should update the offer with the given update", async () => {
+    it("should throw an error if the given collector has no sub", async () => {
+      const update = {
+        collector: { nickname: "nickname", picture: "pic" },
+      };
+
+      await expect(
+        controller.update(offerInDatabase._id.toString(), update)
+      ).rejects.toThrow(/sub is required/gi);
+    });
+
+    it("should throw an error if the given collector has no nickname", async () => {
+      const update = {
+        collector: { sub: "sub", picture: "pic" },
+      };
+
+      await expect(
+        controller.update(offerInDatabase._id.toString(), update)
+      ).rejects.toThrow(/nickname is required/gi);
+    });
+
+    it("should not throw an error if the given collector has no picture", async () => {
+      const update = {
+        collector: { sub: "sub", nickname: "nickname" },
+      };
+
+      const updated = await controller.update(
+        offerInDatabase._id.toString(),
+        update
+      );
+
+      expect(updated.collector.sub).toBe(update.collector.sub);
+      expect(updated.collector.nickname).toBe(update.collector.nickname);
+      expect(updated.collector.picture).toBeFalsy();
+    });
+
+    it("should update the offer city with the given update city", async () => {
       const update = { city: "Hamburg" };
       const updatedOffer = await controller.update(
         offerInDatabase._id.toString(),
@@ -173,5 +209,117 @@ describe("Offers Controller", () => {
     });
   });
 
-  it.todo("get offers as new group ...");
+  describe("Get offers", () => {
+    let bookInDatabase;
+    beforeAll(async () => {
+      //* create some books in the database to have valid book ids
+      const createBooksPromises = [];
+      bookHelper.books.forEach((book) => {
+        createBooksPromises.push(bookController.createBookInDatabase(book));
+      });
+      const books = await Promise.all(createBooksPromises);
+
+      bookInDatabase = books[0];
+
+      //* create some offers in the database to work with
+      const createOffersPromises = books.map((book, index) => {
+        const offer = {
+          provider: {
+            sub: "auth0|idstring" + index,
+            nickname: "Mr. Test the " + index,
+            picture: "picture-url",
+          },
+          book: "id",
+          zip: 10000 + index,
+          city: "Berlin",
+        };
+
+        offer.book = book._id.toString();
+
+        return controller.create(offer);
+      });
+
+      const offersInDatabase = await Promise.all(createOffersPromises);
+
+      await controller.update(offersInDatabase[0], { state: "reserved" });
+      await controller.update(offersInDatabase[1], { state: "pickedup" });
+      await controller.update(offersInDatabase[2], { state: "deleted" });
+      await controller.update(offersInDatabase[3], { city: "New York" });
+    });
+
+    it("should return the latest ten offers from the offers collection if no filter was applied", async () => {
+      const offers = await controller.get();
+
+      expect(offers.length).toBe(10);
+    });
+
+    describe("Filter", () => {
+      it("should return one offer with the validBookIdInDatabase", async () => {
+        const offers = await controller.get({
+          book: bookInDatabase._id.toString(),
+        });
+
+        expect(offers.length).toBe(1);
+        expect(offers[0].book._id.toString()).toBe(
+          bookInDatabase._id.toString()
+        );
+      });
+
+      it("should return one offer with state reserved", async () => {
+        const offers = await controller.get({
+          state: "reserved",
+        });
+
+        expect(offers.length).toBe(1);
+      });
+
+      it("should return one offer with state deleted", async () => {
+        const offers = await controller.get({
+          state: "deleted",
+        });
+
+        expect(offers.length).toBe(1);
+      });
+
+      it("should return one offer with state pickedup", async () => {
+        const offers = await controller.get({
+          state: "pickedup",
+        });
+
+        expect(offers.length).toBe(1);
+      });
+
+      it("should return one offer with city New York", async () => {
+        const offers = await controller.get({
+          city: "New York",
+        });
+
+        expect(offers.length).toBe(1);
+      });
+    });
+
+    describe("Pagination", () => {
+      it("should return first 10 books and than another page with 10 items if the 10th book was passed as lastFetchedOfferId into the second call", async () => {
+        const firstPage = await controller.get();
+        const secondPage = await controller.get(null, firstPage[9]._id);
+
+        expect(firstPage.length).toBe(10);
+        expect(secondPage.length).toBe(10);
+      });
+
+      it("should return one offer even if the lastFetchedItemId is the locked up one with the filter, if there is less matches than 10 items", async () => {
+        const offers = await controller.get(
+          {
+            book: bookInDatabase._id.toString(),
+          },
+          bookInDatabase._id.toString()
+        );
+
+        expect(offers.length).toBe(1);
+        expect(offers[0].book._id.toString()).toBe(
+          bookInDatabase._id.toString()
+        );
+      });
+    });
+  });
 });

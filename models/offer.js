@@ -21,6 +21,9 @@ const OfferSchema = new Schema(
       type: UserSchema,
       required: true,
     },
+    collector: {
+      type: UserSchema,
+    },
     book: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book",

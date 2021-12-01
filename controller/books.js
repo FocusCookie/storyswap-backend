@@ -72,6 +72,7 @@ module.exports.getBooks = async (filter, idOfLastFetchedBook) => {
     const mongooseFilter = [];
     let books;
 
+    //TODO: Refactore the filter and ifLastFetched into a seperate functions, because its the same as in offers
     if (filter) {
       for (const key in filter) {
         const filterRegex = new RegExp(filter[key], "ig");
@@ -81,14 +82,14 @@ module.exports.getBooks = async (filter, idOfLastFetchedBook) => {
       }
     }
 
-    if (filter && idOfLastFetchedBook) {
+    if (mongooseFilter.length > 0 && idOfLastFetchedBook) {
       books = await Book.find({
         $or: mongooseFilter,
         $and: [{ _id: { $gt: idOfLastFetchedBook.toString() } }],
       }).limit(ITEMS_PER_PAGE);
     }
 
-    if (filter && !idOfLastFetchedBook) {
+    if (mongooseFilter.length > 0 && !idOfLastFetchedBook) {
       books = await Book.find({
         $or: mongooseFilter,
       }).limit(ITEMS_PER_PAGE);
