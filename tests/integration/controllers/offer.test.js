@@ -4,7 +4,6 @@ const config = require("config");
 const controller = require("../../../controller/offers");
 const bookController = require("../../../controller/books");
 const bookHelper = require("../../../helpers/books");
-const Offer = require("../../../models/offer");
 const { MongoClient } = require("mongodb");
 
 const testBook = {
@@ -296,6 +295,17 @@ describe("Offers Controller", () => {
 
         expect(offers.length).toBe(1);
       });
+
+      it("should return one offer with given provider sub", async () => {
+        const sub = "auth0|idstring0";
+
+        const offers = await controller.get({
+          provider: { sub: sub },
+        });
+
+        expect(offers.length).toBe(1);
+        expect(offers[0].provider.sub).toBe(sub);
+      });
     });
 
     describe("Pagination", () => {
@@ -320,6 +330,73 @@ describe("Offers Controller", () => {
           bookInDatabase._id.toString()
         );
       });
+    });
+  });
+
+  describe("Get offer by id", () => {
+    let bookInDatabase;
+    let offersInDatabase;
+    beforeAll(async () => {
+      //* create some books in the database to have valid book ids
+      const createBooksPromises = [];
+      bookHelper.books.forEach((book) => {
+        createBooksPromises.push(bookController.createBookInDatabase(book));
+      });
+      const books = await Promise.all(createBooksPromises);
+
+      bookInDatabase = books[0];
+
+      //* create some offers in the database to work with
+      const createOffersPromises = books.map((book, index) => {
+        const offer = {
+          provider: {
+            sub: "auth0|idstring" + index,
+            nickname: "Mr. Test the " + index,
+            picture: "picture-url",
+          },
+          book: "id",
+          zip: 10000 + index,
+          city: "Berlin",
+        };
+
+        offer.book = book._id.toString();
+
+        return controller.create(offer);
+      });
+
+      offersInDatabase = await Promise.all(createOffersPromises);
+
+      await controller.update(offersInDatabase[0], { state: "reserved" });
+      await controller.update(offersInDatabase[1], { state: "pickedup" });
+      await controller.update(offersInDatabase[2], { state: "deleted" });
+      await controller.update(offersInDatabase[3], { city: "New York" });
+    });
+
+    it("should throw an error if no id was given", async () => {
+      await expect(controller.getById()).rejects.toThrow();
+    });
+
+    it("should throw an invalid offer id error if given id is not a string or number", async () => {
+      await expect(controller.getById([])).rejects.toThrow();
+      await expect(controller.getById({})).rejects.toThrow();
+      await expect(controller.getById(true)).rejects.toThrow();
+    });
+
+    it("should throw an invalid offer id error if given id is not a valid object id", async () => {
+      await expect(controller.getById("hello world")).rejects.toThrow();
+      await expect(controller.getById("123")).rejects.toThrow();
+    });
+
+    it("should return a offer from the database if the given id is valid", async () => {
+      const offers = await controller.get();
+
+      const selectedOfferToCheck = offers[0];
+
+      const offer = await controller.getById(
+        selectedOfferToCheck._id.toString()
+      );
+
+      expect(selectedOfferToCheck._id).toEqual(offer._id);
     });
   });
 });

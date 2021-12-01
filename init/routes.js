@@ -3,6 +3,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
 const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 const error = require("../middleware/error");
 const bodyParser = require("body-parser");
 
@@ -19,6 +20,7 @@ module.exports = function (app) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(auth);
+  app.use(prettyUser); // * Needs to after auth! Because in auth is the user attached to the req
 
   app.use("/books", books);
   app.use("/offers", offers);

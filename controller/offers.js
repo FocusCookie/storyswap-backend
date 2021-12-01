@@ -1,5 +1,6 @@
 const debug = require("debug")("CONTROLLER:OFFERS");
 const Offer = require("../models/offer");
+const mongoose = require("mongoose");
 
 const ITEMS_PER_PAGE = 10;
 
@@ -77,6 +78,12 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
 
     if (filter) {
       for (const key in filter) {
+        if (key === "provider" && filter[key].sub) {
+          mongooseFilter.push({
+            "provider.sub": filter[key].sub,
+          });
+        }
+
         if (key === "book" || key === "zip" || key === "state") {
           // * book should be a book._id an id cant be searched via a regex
           mongooseFilter.push({
@@ -120,4 +127,13 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
     debug("%s", error);
     throw new Error(error);
   }
+};
+
+module.exports.getById = async function (id) {
+  const idIsValid = mongoose.Types.ObjectId.isValid(id);
+  if (!idIsValid) throw new Error("invalid offer id");
+
+  const offer = await Offer.findOne({ _id: id });
+
+  return offer;
 };
