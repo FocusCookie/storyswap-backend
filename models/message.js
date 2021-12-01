@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
-const { Chat } = requie("./chat.js");
-const { User } = requie("./user.js");
+const Chat = requie("./chat.js");
 const Schema = mongoose.Schema;
+
+UserSchema;
 
 const ChatSchema = new Schema({
   chat: {
     type: Chat,
     required: true,
   },
-  user: {
-    type: User,
+  creatorSub: {
+    type: String,
     required: true,
   },
   content: {

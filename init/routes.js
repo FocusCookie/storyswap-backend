@@ -3,10 +3,12 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
 const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 const error = require("../middleware/error");
 const bodyParser = require("body-parser");
 
 const books = require("../routes/books");
+const offers = require("../routes/offers");
 const indexRouter = require("../routes/index");
 
 module.exports = function (app) {
@@ -18,8 +20,10 @@ module.exports = function (app) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(auth);
+  app.use(prettyUser); // * Needs to after auth! Because in auth is the user attached to the req
 
   app.use("/books", books);
+  app.use("/offers", offers);
   app.use("/", indexRouter);
 
   // catch 404 and forward to error handler
