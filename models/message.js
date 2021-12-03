@@ -2,8 +2,6 @@ const mongoose = require("mongoose");
 const Chat = requie("./chat.js");
 const Schema = mongoose.Schema;
 
-UserSchema;
-
 const ChatSchema = new Schema({
   chat: {
     type: Chat,

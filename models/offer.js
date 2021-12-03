@@ -1,28 +1,12 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
-const UserSchema = new Schema({
-  sub: {
-    type: String,
-    required: true,
-  },
-  nickname: {
-    type: String,
-    required: true,
-  },
-  picture: {
-    type: String,
-  },
-});
+const UserSchema = require("./user.js");
 
 const OfferSchema = new Schema(
   {
     provider: {
       type: UserSchema,
       required: true,
-    },
-    collector: {
-      type: UserSchema,
     },
     book: {
       type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +29,10 @@ const OfferSchema = new Schema(
       type: String,
       enum: ["pending", "reserved", "deleted", "pickedup"],
       default: "pending",
+    },
+    reservation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Reservation",
     },
   },
   {

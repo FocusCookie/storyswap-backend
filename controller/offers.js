@@ -36,14 +36,7 @@ module.exports.update = async function (id, update) {
 
     let validUpdateProps = {};
 
-    const { provider, book, zip, city, state, collector } = update;
-
-    if (collector && (!collector.sub || !collector.nickname))
-      throw new Error(
-        `invalid collector ${!collector.sub ? "sub is required" : ""} ${
-          !collector.nickname ? "nickname is required" : ""
-        }`
-      );
+    const { provider, book, zip, city, state } = update;
 
     validUpdateProps = {
       ...provider,
@@ -51,7 +44,6 @@ module.exports.update = async function (id, update) {
       ...zip,
       ...city,
       ...state,
-      ...collector,
     };
 
     if (Object.values(validUpdateProps).length === 0)

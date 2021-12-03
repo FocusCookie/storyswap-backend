@@ -1,27 +1,32 @@
 const mongoose = require("mongoose");
-const { User } = requie("./user.js");
+const UserSchema = require("./user.js");
 const Schema = mongoose.Schema;
 
-const ReservationSchema = new Schema({
-  user: {
-    type: User,
-    required: true,
+const ReservationSchema = new Schema(
+  {
+    collector: {
+      type: UserSchema,
+      required: true,
+    },
+    until: {
+      type: Date,
+      required: true,
+    },
+    offer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Offer",
+      required: true,
+    },
+    state: {
+      type: String,
+      enum: ["reserved", "deleted", "pickedup"],
+      default: "reserved",
+    },
   },
-  until: {
-    type: Date,
-    required: true,
-  },
-  offer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Offer",
-    required: true,
-  },
-  state: {
-    type: String,
-    enum: ["reserved", "deleted", "pickedup"],
-    default: "reserved",
-  },
-});
+  {
+    collection: "reservations",
+  }
+);
 
 const Reservation = mongoose.model("Reservation", ReservationSchema);
 

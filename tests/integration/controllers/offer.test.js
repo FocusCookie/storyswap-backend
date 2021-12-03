@@ -163,41 +163,6 @@ describe("Offers Controller", () => {
       ).rejects.toThrow(/invalid offer update/gi);
     });
 
-    it("should throw an error if the given collector has no sub", async () => {
-      const update = {
-        collector: { nickname: "nickname", picture: "pic" },
-      };
-
-      await expect(
-        controller.update(offerInDatabase._id.toString(), update)
-      ).rejects.toThrow(/sub is required/gi);
-    });
-
-    it("should throw an error if the given collector has no nickname", async () => {
-      const update = {
-        collector: { sub: "sub", picture: "pic" },
-      };
-
-      await expect(
-        controller.update(offerInDatabase._id.toString(), update)
-      ).rejects.toThrow(/nickname is required/gi);
-    });
-
-    it("should not throw an error if the given collector has no picture", async () => {
-      const update = {
-        collector: { sub: "sub", nickname: "nickname" },
-      };
-
-      const updated = await controller.update(
-        offerInDatabase._id.toString(),
-        update
-      );
-
-      expect(updated.collector.sub).toBe(update.collector.sub);
-      expect(updated.collector.nickname).toBe(update.collector.nickname);
-      expect(updated.collector.picture).toBeFalsy();
-    });
-
     it("should update the offer city with the given update city", async () => {
       const update = { city: "Hamburg" };
       const updatedOffer = await controller.update(
