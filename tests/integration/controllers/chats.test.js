@@ -94,6 +94,14 @@ describe("Chat Controller", () => {
       expect(chat.users[0].sub).toBe(userA.sub);
       expect(chat.users[1].sub).toBe(userB.sub);
     });
+
+    it("should return the existing chat if the users are already in a chat that exists already", async () => {
+      userA.sub = "auth0-create|userA";
+      const chat = await controller.create([userA, userC]);
+      const secondAttemp = await controller.create([userA, userC]);
+
+      expect(chat._id.toString()).toBe(secondAttemp._id.toString());
+    });
   });
 
   describe("Get chat by chat id", () => {

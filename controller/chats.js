@@ -18,6 +18,19 @@ module.exports.create = async function (users) {
     )
       throw new Error("invalid users");
 
+    const chatExistsAlready = await Chat.findOne({
+      $and: [
+        {
+          users: { $elemMatch: { sub: users[0].sub } },
+        },
+        {
+          users: { $elemMatch: { sub: users[1].sub } },
+        },
+      ],
+    });
+
+    if (chatExistsAlready) return chatExistsAlready;
+
     const chat = new Chat({ users: users });
 
     const createdChat = await chat.save();
@@ -76,7 +89,7 @@ module.exports.delete = async function (id) {
 
     if (!chat) throw new Error("No chat found with id: ", id);
 
-    const deleted = await Chat.remove({ _id: id });
+    const deleted = await Chat.deleteOne({ _id: id });
 
     return deleted;
   } catch (error) {
