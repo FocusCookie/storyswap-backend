@@ -1,11 +1,11 @@
 require("../../../init/mongodb");
 require("dotenv").config();
 const config = require("config");
-const controller = require("../../../controller/chat");
+const controller = require("../../../controller/chats");
 const Chat = require("../../../models/chat");
 const { MongoClient } = require("mongodb");
 
-describe("Offers Controller", () => {
+describe("Chat Controller", () => {
   let client;
   let db;
   let userA = {
@@ -145,6 +145,14 @@ describe("Offers Controller", () => {
       );
     });
 
+    it("should throw an error the given id is not linked to a chat in the database", async () => {
+      const mongoObjectId = "61ae0c282a3988e063b4ff4e";
+
+      await expect(controller.getByChatId(mongoObjectId)).rejects.toThrow(
+        /no chat found/gi
+      );
+    });
+
     it("should return the chat with the given id", async () => {
       const chat = await controller.getByChatId(
         chatsInDatabase[0]._id.toString()
@@ -248,7 +256,7 @@ describe("Offers Controller", () => {
     });
 
     it("should throw an error the given id is not linked to a chat in the database", async () => {
-      const mongoObjectId = "61adef63baf93e10f26998a4";
+      const mongoObjectId = "61ae0c282a3988e063b4ff4e";
       await expect(controller.delete(mongoObjectId)).rejects.toThrow(
         /no chat found/gi
       );

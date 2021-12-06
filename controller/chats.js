@@ -2,8 +2,6 @@ const debug = require("debug")("CONTROLLER:CHAT");
 const Chat = require("../models/chat");
 const mongoose = require("mongoose");
 
-const ITEMS_PER_PAGE = 10;
-
 module.exports.create = async function (users) {
   try {
     if (
@@ -38,7 +36,7 @@ module.exports.getByChatId = async function (id) {
     const idIsValid = mongoose.Types.ObjectId.isValid(id);
     if (!idIsValid) throw new Error("invalid chat id");
 
-    const chat = Chat.findOne({ _id: id });
+    const chat = await Chat.findOne({ _id: id });
 
     if (!chat) throw new Error("No chat found with id: ", id);
 
