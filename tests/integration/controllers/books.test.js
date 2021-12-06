@@ -2,7 +2,7 @@ require("../../../init/mongodb");
 require("dotenv").config();
 const config = require("config");
 const controller = require("../../../controller/books");
-const Book = require("../../../models/book");
+const { Book } = require("../../../models/book");
 const bookHelper = require("../../../helpers/books");
 
 const { MongoClient } = require("mongodb");
@@ -134,6 +134,12 @@ describe("Book Controller", () => {
       await expect(
         controller.createBookWithIsbnOrIsbn13("12w14a")
       ).rejects.toThrow();
+    });
+
+    it("should throw an error if the given isbn was not found in db and isbnDb", async () => {
+      await expect(
+        controller.createBookWithIsbnOrIsbn13("1113322331")
+      ).rejects.toThrow(/not found/gi);
     });
 
     it("should  return the book from the database if the book is already in the database", async () => {

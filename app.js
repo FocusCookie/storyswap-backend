@@ -24,6 +24,10 @@ app.all("*", ensureHttps);
 // ROUTES
 require("./init/routes")(app);
 
+//TODO: Scheduler
+// delete all expired reservations and set offers to pending and set resertaoin tuo null
+// if offer is pickedup and resrvation is pickedup -> make the credits exchange
+
 http
   .createServer(app)
   .listen(config.server.httpPort, config.server.host, () => {

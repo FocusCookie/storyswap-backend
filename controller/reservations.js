@@ -54,7 +54,12 @@ module.exports.update = async function (id, update) {
       throw new Error("invalid state update");
     if (
       state &&
-      !(state === "pending" || state === "deleted" || state === "pickedup")
+      !(
+        state === "pending" ||
+        state === "deleted" ||
+        state === "pickedup" ||
+        state === "expired"
+      )
     )
       throw new Error("invalid state update");
 

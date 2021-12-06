@@ -36,14 +36,17 @@ module.exports.update = async function (id, update) {
 
     let validUpdateProps = {};
 
-    const { provider, book, zip, city, state } = update;
+    debug("UPDATE %s", update);
+
+    const { provider, book, zip, city, state, reservation } = update;
 
     validUpdateProps = {
-      ...provider,
-      ...book,
-      ...zip,
-      ...city,
-      ...state,
+      provider,
+      book,
+      zip,
+      city,
+      state,
+      reservation,
     };
 
     if (Object.values(validUpdateProps).length === 0)
@@ -51,6 +54,8 @@ module.exports.update = async function (id, update) {
 
     const offerToUpdate = await Offer.findOne({ _id: id });
     if (!offerToUpdate) throw new Error("No offer found with id: ", id);
+
+    debug("hier %s", validUpdateProps);
 
     await offerToUpdate.updateOne(update);
 

@@ -17,11 +17,11 @@ module.exports.getBookByIsbnOrIsbn13 = async (isbnOrIsbn13) => {
     const response = await instance.get(`book/${isbnOrIsbn13}`);
     const book = response.data.book;
 
-    debug(book);
-
     return book;
   } catch (error) {
+    const message = error.response.status === 404 ? "not found" : error.message;
+    console.log(message);
     debug("%s", error);
-    throw new Error("ISBN API: ", error.message);
+    throw new Error(`ISBN API: ${message}`);
   }
 };

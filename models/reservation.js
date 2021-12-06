@@ -19,7 +19,7 @@ const ReservationSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["reserved", "deleted", "pickedup"],
+      enum: ["reserved", "deleted", "pickedup", "expired"],
       default: "reserved",
     },
   },

@@ -1,5 +1,5 @@
 const debug = require("debug")("CONTROLLER:BOOKS");
-const Book = require("../models/book");
+const { Book } = require("../models/book");
 const isbndb = require("../services/isbndb");
 const isbnHelper = require("../helpers/isbn");
 const mongoose = require("mongoose");
@@ -60,9 +60,16 @@ module.exports.createBookWithIsbnOrIsbn13 = async (isbnOrIsbn13) => {
       bookFromIsbnDb
     );
 
+    debug(bookStoredInDatabase);
+
     return bookStoredInDatabase;
   } catch (error) {
     debug("%s", error);
+
+    if (error.status) {
+      throw new error();
+    }
+
     throw new Error(error);
   }
 };
