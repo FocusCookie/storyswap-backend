@@ -4,6 +4,7 @@ const debug = require("debug")("ROUTES:BOOKS");
 const controller = require("../controller/books");
 const { validate } = require("../models/book");
 
+//TODO: Only for admins
 router.get("/", async (req, res) => {
   try {
     const books = await controller.getBooks();

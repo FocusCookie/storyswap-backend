@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 
 const books = require("../routes/books");
 const offers = require("../routes/offers");
+const reservations = require("../routes/reservations");
 const indexRouter = require("../routes/index");
 
 module.exports = function (app) {
@@ -24,6 +25,7 @@ module.exports = function (app) {
 
   app.use("/books", books);
   app.use("/offers", offers);
+  app.use("/reservations", reservations);
   app.use("/", indexRouter);
 
   // catch 404 and forward to error handler

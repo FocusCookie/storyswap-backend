@@ -32,6 +32,8 @@ userIsCollector = function (user, reservation) {
   return user.sub === reservation.collector.sub;
 };
 
+//TODO: isAdmin
+
 const offers = {
   userIsProvider,
 };

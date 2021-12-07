@@ -6,7 +6,7 @@ const reservationController = require("../controller/reservations");
 const { firstDateIsPastDayComparedToSecond } = require("../helpers/util");
 const authorization = require("../controller/authorization");
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const offers = await offersController.get({ state: "pending" });
     res.send(offers);
@@ -15,10 +15,23 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/my", async (req, res, next) => {
+  try {
+    const user = req.user;
+    const offers = await offersController.getByUser(user);
+    res.send(offers);
+  } catch (error) {
+    debug("%s", err);
+    next(error);
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const offer = await offersController.getById(id);
+
+    if (!offer) throw { status: 400, message: `No offer found with id: ${id}` };
     res.send(offer);
   } catch (error) {
     next(error);
@@ -52,7 +65,7 @@ router.post("/:id/reserve", async (req, res, next) => {
     const user = req.user;
     const reservation = {
       collector: user,
-      offer: req.body.offer,
+      offer: id,
       until: req.body.until,
     };
 
@@ -168,7 +181,5 @@ router.post("/:id/pickedup", async (req, res, next) => {
     next(error);
   }
 });
-
-router.get("/my", async (req, res, next) => {});
 
 module.exports = router;

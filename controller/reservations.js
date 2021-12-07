@@ -45,7 +45,6 @@ module.exports.update = async function (id, update) {
       throw new Error("invalid update");
 
     const reservation = await Reservation.findOne({ _id: id });
-
     if (!reservation) throw new Error("No reservation found with id: ", id);
 
     const { until, state } = update;
