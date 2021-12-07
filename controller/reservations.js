@@ -113,24 +113,32 @@ module.exports.get = async (filter, idOfLastFetchedReservation) => {
     if (mongooseFilter.length > 0 && idOfLastFetchedReservation) {
       reservations = await Reservation.find({
         $or: mongooseFilter,
-        $and: [{ _id: { $gt: idOfLastFetchedReservation.toString() } }],
-      }).limit(ITEMS_PER_PAGE);
+        $and: [{ _id: { $lt: idOfLastFetchedReservation.toString() } }],
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (mongooseFilter.length > 0 && !idOfLastFetchedReservation) {
       reservations = await Reservation.find({
         $or: mongooseFilter,
-      }).limit(ITEMS_PER_PAGE);
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && idOfLastFetchedReservation) {
       reservations = await Reservation.find({
-        _id: { $gt: idOfLastFetchedReservation.toString() },
-      }).limit(ITEMS_PER_PAGE);
+        _id: { $lt: idOfLastFetchedReservation.toString() },
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && !idOfLastFetchedReservation) {
-      reservations = await Reservation.find().limit(ITEMS_PER_PAGE);
+      reservations = await Reservation.find()
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     return reservations;

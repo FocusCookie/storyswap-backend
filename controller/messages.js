@@ -41,7 +41,7 @@ module.exports.getByChatId = async function (chatId, lastFetchedMessageId) {
     const chat = await Chat.findOne({ _id: chatId });
     if (!chat) throw new Error("No chat found with chatId: ", chatId);
 
-    let messages;
+    let messages = [];
 
     if (typeof lastFetchedMessageId === "number")
       throw new Error("invalid messageId");
@@ -54,10 +54,12 @@ module.exports.getByChatId = async function (chatId, lastFetchedMessageId) {
     if (lastFetchedMessageId) {
       messages = await Message.find({
         chat: chatId,
-        _id: { $gt: lastFetchedMessageId.toString() },
+        _id: { $lt: lastFetchedMessageId.toString() },
       }).limit(ITEMS_PER_PAGE);
     } else {
-      messages = await Message.find({ chat: chatId }).limit(ITEMS_PER_PAGE);
+      messages = await Message.find({ chat: chatId })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     return messages;

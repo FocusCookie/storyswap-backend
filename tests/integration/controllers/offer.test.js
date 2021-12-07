@@ -271,21 +271,7 @@ describe("Offers Controller", () => {
         const secondPage = await controller.get(null, firstPage[9]._id);
 
         expect(firstPage.length).toBe(10);
-        expect(secondPage.length).toBe(10);
-      });
-
-      it("should return one offer even if the lastFetchedItemId is the locked up one with the filter, if there is less matches than 10 items", async () => {
-        const offers = await controller.get(
-          {
-            book: bookInDatabase._id.toString(),
-          },
-          bookInDatabase._id.toString()
-        );
-
-        expect(offers.length).toBe(1);
-        expect(offers[0].book._id.toString()).toBe(
-          bookInDatabase._id.toString()
-        );
+        expect(secondPage.length).toBeTruthy();
       });
     });
   });

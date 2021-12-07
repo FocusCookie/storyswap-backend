@@ -96,24 +96,32 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
     if (mongooseFilter.length > 0 && lastFatchedOfferId) {
       offers = await Offer.find({
         $or: mongooseFilter,
-        $and: [{ _id: { $gt: lastFatchedOfferId.toString() } }],
-      }).limit(ITEMS_PER_PAGE);
+        $and: [{ _id: { $lt: lastFatchedOfferId.toString() } }],
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (mongooseFilter.length > 0 && !lastFatchedOfferId) {
       offers = await Offer.find({
         $or: mongooseFilter,
-      }).limit(ITEMS_PER_PAGE);
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && lastFatchedOfferId) {
       offers = await Offer.find({
-        _id: { $gt: lastFatchedOfferId.toString() },
-      }).limit(ITEMS_PER_PAGE);
+        _id: { $lt: lastFatchedOfferId.toString() },
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && !lastFatchedOfferId) {
-      offers = await Offer.find().limit(ITEMS_PER_PAGE);
+      offers = await Offer.find()
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     return offers;
@@ -147,7 +155,7 @@ module.exports.getByUser = async function (user) {
         ],
       },
     ],
-  });
+  }).sort({ created_at: "desc" });
 
   return offers;
 };
