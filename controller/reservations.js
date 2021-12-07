@@ -149,3 +149,23 @@ module.exports.getById = async (id) => {
 
   return reservation;
 };
+
+module.exports.getByUser = async (user) => {
+  if (!user?.sub || typeof user !== "object" || Array.isArray(user))
+    throw new Error("invalid user");
+
+  const reservations = await Reservation.find({
+    $and: [
+      { "collector.sub": user.sub },
+      {
+        $or: [
+          { state: "pickedup" },
+          { state: "reserved" },
+          { state: "expired" },
+        ],
+      },
+    ],
+  });
+
+  return reservations;
+};

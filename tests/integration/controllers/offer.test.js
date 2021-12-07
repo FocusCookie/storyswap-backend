@@ -391,8 +391,6 @@ describe("Offers Controller", () => {
           state: state,
         };
 
-        offer.book = book._id.toString();
-
         return controller.create(offer);
       });
 
