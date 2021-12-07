@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const debug = require("debug")("ROUTES:OFFERS");
 const offersController = require("../controller/offers");
 const reservationController = require("../controller/reservations");
 const { firstDateIsPastDayComparedToSecond } = require("../helpers/util");
+const authorization = require("../controller/authorization");
 
 router.get("/", async (req, res) => {
   try {
@@ -60,6 +62,12 @@ router.post("/:id/reserve", async (req, res, next) => {
     if (offer.state === "reserved" || offer.reservation)
       throw { status: 400, message: "offer is already reserved" };
 
+    if (authorization.offers.userIsProvider(user, offer))
+      throw {
+        status: 400,
+        message: "you can not reserve your own offer",
+      };
+
     const createdReservation = await reservationController.create(reservation);
     await offersController.update(id, {
       reservation: createdReservation._id.toString(),
@@ -87,13 +95,16 @@ router.post("/:id/unreserve", async (req, res, next) => {
       offer.reservation.toString()
     );
 
-    if (reservation.collector.sub !== user.sub) {
+    if (!authorization.reservations.userIsCollector(user, reservation)) {
       throw {
         status: 403,
         message: "not authorized to change a reservation of another user",
       };
     } else {
       const today = new Date();
+
+      debug("%s", { today: today, until: reservation.until });
+
       if (firstDateIsPastDayComparedToSecond(reservation.until, today)) {
         await offersController.update(id, {
           reservation: null,
@@ -158,8 +169,6 @@ router.post("/:id/pickedup", async (req, res, next) => {
   }
 });
 
-//TODO: delete - only possible if the offer is not reserved and the until date is still in the future
-
-//TODO: get my offers from my user sub
+router.get("/my", async (req, res, next) => {});
 
 module.exports = router;

@@ -36,18 +36,17 @@ module.exports.update = async function (id, update) {
 
     let validUpdateProps = {};
 
-    debug("UPDATE %s", update);
-
-    const { provider, book, zip, city, state, reservation } = update;
-
-    validUpdateProps = {
-      provider,
-      book,
-      zip,
-      city,
-      state,
-      reservation,
-    };
+    for (let prop in update) {
+      if (
+        prop === "provider" ||
+        prop === "book" ||
+        prop === "zip" ||
+        prop === "city" ||
+        prop === "state" ||
+        prop === "reservation"
+      )
+        validUpdateProps[prop] = update[prop];
+    }
 
     if (Object.values(validUpdateProps).length === 0)
       throw new Error("invalid offer update");
@@ -55,9 +54,7 @@ module.exports.update = async function (id, update) {
     const offerToUpdate = await Offer.findOne({ _id: id });
     if (!offerToUpdate) throw new Error("No offer found with id: ", id);
 
-    debug("hier %s", validUpdateProps);
-
-    await offerToUpdate.updateOne(update);
+    await offerToUpdate.updateOne(validUpdateProps);
 
     const updatedOffer = await Offer.findOne({ _id: id });
 
@@ -133,4 +130,24 @@ module.exports.getById = async function (id) {
   const offer = await Offer.findOne({ _id: id });
 
   return offer;
+};
+
+module.exports.getByUser = async function (user) {
+  if (!user?.sub || typeof user !== "object" || Array.isArray(user))
+    throw new Error("invalid user");
+
+  const offers = await Offer.find({
+    $and: [
+      { "provider.sub": user.sub },
+      {
+        $or: [
+          { state: "pending" },
+          { state: "pickedup" },
+          { state: "reserved" },
+        ],
+      },
+    ],
+  });
+
+  return offers;
 };

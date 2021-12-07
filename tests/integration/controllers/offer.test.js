@@ -155,14 +155,6 @@ describe("Offers Controller", () => {
       ).rejects.toThrow(/No offer found with id/gi);
     });
 
-    it("should throw an error if the given update is not valid with the model", async () => {
-      const update = { city: 123 };
-
-      await expect(
-        controller.update(offerInDatabase._id.toString(), update)
-      ).rejects.toThrow(/invalid offer update/gi);
-    });
-
     it("should update the offer city with the given update city", async () => {
       const update = { city: "Hamburg" };
       const updatedOffer = await controller.update(
@@ -362,6 +354,102 @@ describe("Offers Controller", () => {
       );
 
       expect(selectedOfferToCheck._id).toEqual(offer._id);
+    });
+  });
+
+  describe("Get my offers (user offers)", () => {
+    let booksInDatabase;
+    let offersInDatabase;
+    const validUser = {
+      sub: "auth0|test",
+      nickname: "Mr. Test",
+      picture: "picture-url",
+    };
+
+    beforeAll(async () => {
+      //* create some books in the database to have valid book ids
+      const createBooksPromises = [];
+      bookHelper.books.forEach((book) => {
+        createBooksPromises.push(bookController.createBookInDatabase(book));
+      });
+
+      booksInDatabase = await Promise.all(createBooksPromises);
+
+      //* create some offers in the database to work with
+      const createOffersPromises = booksInDatabase.map((book, index) => {
+        let state = "pending";
+
+        if (index >= 10 && index < 15) state = "pickedup";
+        if (index >= 15 && index < 20) state = "reserved";
+        if (index >= 20) state = "deleted";
+
+        const offer = {
+          provider: validUser,
+          book: book._id.toString(),
+          zip: 10000 + index,
+          city: "Berlin",
+          state: state,
+        };
+
+        offer.book = book._id.toString();
+
+        return controller.create(offer);
+      });
+
+      offersInDatabase = await Promise.all(createOffersPromises);
+    });
+
+    it("should throw an error if no user is given", async () => {
+      await expect(controller.getByUser()).rejects.toThrow(/invalid user/gi);
+    });
+
+    it("should throw an error the user is not an object", async () => {
+      await expect(controller.getByUser(1)).rejects.toThrow(/invalid user/gi);
+      await expect(controller.getByUser(true)).rejects.toThrow(
+        /invalid user/gi
+      );
+      await expect(controller.getByUser([])).rejects.toThrow(/invalid user/gi);
+      await expect(controller.getByUser("user")).rejects.toThrow(
+        /invalid user/gi
+      );
+    });
+
+    it("should throw an error if the given user has no sub property", async () => {
+      const invalidUser = {
+        nickname: validUser.nickname,
+        picture: validUser.picture,
+      };
+      await expect(controller.getByUser(invalidUser)).rejects.toThrow(
+        /invalid user/gi
+      );
+    });
+
+    it("should return an empty array if no offer is accossiated with the user", async () => {
+      const userWithoutOffers = {
+        sub: "auth0|noOffers",
+        nickname: "no offers",
+        picture: "pic",
+      };
+
+      const offers = await controller.getByUser(userWithoutOffers);
+
+      expect(offers).toBeTruthy();
+      expect(offers.length).toBe(0);
+    });
+
+    it("should return 20 offer in total where 10 offers are state pending, 5 are  reserved and 5 with  pickedup for the validUser", async () => {
+      const offers = await controller.getByUser(validUser);
+
+      const pending = offers.filter((offer) => offer.state === "pending");
+      const reserved = offers.filter((offer) => offer.state === "reserved");
+      const pickedup = offers.filter((offer) => offer.state === "pickedup");
+
+      expect(offers).toBeTruthy();
+      expect(offers.length).toBe(20);
+
+      expect(pending.length).toBe(10);
+      expect(reserved.length).toBe(5);
+      expect(pickedup.length).toBe(5);
     });
   });
 });
