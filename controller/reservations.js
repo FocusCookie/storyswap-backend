@@ -45,7 +45,6 @@ module.exports.update = async function (id, update) {
       throw new Error("invalid update");
 
     const reservation = await Reservation.findOne({ _id: id });
-
     if (!reservation) throw new Error("No reservation found with id: ", id);
 
     const { until, state } = update;
@@ -54,7 +53,12 @@ module.exports.update = async function (id, update) {
       throw new Error("invalid state update");
     if (
       state &&
-      !(state === "pending" || state === "deleted" || state === "pickedup")
+      !(
+        state === "pending" ||
+        state === "deleted" ||
+        state === "pickedup" ||
+        state === "expired"
+      )
     )
       throw new Error("invalid state update");
 
@@ -109,24 +113,32 @@ module.exports.get = async (filter, idOfLastFetchedReservation) => {
     if (mongooseFilter.length > 0 && idOfLastFetchedReservation) {
       reservations = await Reservation.find({
         $or: mongooseFilter,
-        $and: [{ _id: { $gt: idOfLastFetchedReservation.toString() } }],
-      }).limit(ITEMS_PER_PAGE);
+        $and: [{ _id: { $lt: idOfLastFetchedReservation.toString() } }],
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (mongooseFilter.length > 0 && !idOfLastFetchedReservation) {
       reservations = await Reservation.find({
         $or: mongooseFilter,
-      }).limit(ITEMS_PER_PAGE);
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && idOfLastFetchedReservation) {
       reservations = await Reservation.find({
-        _id: { $gt: idOfLastFetchedReservation.toString() },
-      }).limit(ITEMS_PER_PAGE);
+        _id: { $lt: idOfLastFetchedReservation.toString() },
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && !idOfLastFetchedReservation) {
-      reservations = await Reservation.find().limit(ITEMS_PER_PAGE);
+      reservations = await Reservation.find()
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     return reservations;
@@ -143,4 +155,24 @@ module.exports.getById = async (id) => {
   const reservation = await Reservation.findOne({ _id: id });
 
   return reservation;
+};
+
+module.exports.getByUser = async (user) => {
+  if (!user?.sub || typeof user !== "object" || Array.isArray(user))
+    throw new Error("invalid user");
+
+  const reservations = await Reservation.find({
+    $and: [
+      { "collector.sub": user.sub },
+      {
+        $or: [
+          { state: "pickedup" },
+          { state: "reserved" },
+          { state: "expired" },
+        ],
+      },
+    ],
+  });
+
+  return reservations;
 };

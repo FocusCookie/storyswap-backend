@@ -161,7 +161,7 @@ describe("Messages Controller", () => {
 
       expect(messages).toBeTruthy();
       expect(messages.length).toBe(20);
-      expect(messages[19].content).toBe("message nr. 19");
+      expect(messages[19].content).toBe("message nr. 5");
     });
 
     it("should throw an error if the last fetchedMessageId is not a valid mongoo object id", async () => {
@@ -191,13 +191,14 @@ describe("Messages Controller", () => {
         messagesPage1[19]._id.toString()
       );
 
+      // * Message are sorted in desc by created_at
       expect(messagesPage1).toBeTruthy();
       expect(messagesPage1.length).toBe(20);
-      expect(messagesPage1[19].content).toBe("message nr. 19");
+      expect(messagesPage1[19].content).toBe("message nr. 5");
 
       expect(messagesPage2).toBeTruthy();
       expect(messagesPage2.length).toBe(5);
-      expect(messagesPage2[4].content).toBe("message nr. 24");
+      expect(messagesPage2[4].content).toBe("message nr. 4");
     });
   });
 
@@ -238,7 +239,7 @@ describe("Messages Controller", () => {
       );
 
       expect(message).toBeTruthy();
-      expect(message.content).toBe("message nr. 24");
+      expect(message.content).toBe("message nr. 24"); // * Message are sorted in desc by created_at
     });
   });
 });

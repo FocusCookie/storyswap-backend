@@ -36,15 +36,17 @@ module.exports.update = async function (id, update) {
 
     let validUpdateProps = {};
 
-    const { provider, book, zip, city, state } = update;
-
-    validUpdateProps = {
-      ...provider,
-      ...book,
-      ...zip,
-      ...city,
-      ...state,
-    };
+    for (let prop in update) {
+      if (
+        prop === "provider" ||
+        prop === "book" ||
+        prop === "zip" ||
+        prop === "city" ||
+        prop === "state" ||
+        prop === "reservation"
+      )
+        validUpdateProps[prop] = update[prop];
+    }
 
     if (Object.values(validUpdateProps).length === 0)
       throw new Error("invalid offer update");
@@ -52,7 +54,7 @@ module.exports.update = async function (id, update) {
     const offerToUpdate = await Offer.findOne({ _id: id });
     if (!offerToUpdate) throw new Error("No offer found with id: ", id);
 
-    await offerToUpdate.updateOne(update);
+    await offerToUpdate.updateOne(validUpdateProps);
 
     const updatedOffer = await Offer.findOne({ _id: id });
 
@@ -94,24 +96,32 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
     if (mongooseFilter.length > 0 && lastFatchedOfferId) {
       offers = await Offer.find({
         $or: mongooseFilter,
-        $and: [{ _id: { $gt: lastFatchedOfferId.toString() } }],
-      }).limit(ITEMS_PER_PAGE);
+        $and: [{ _id: { $lt: lastFatchedOfferId.toString() } }],
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (mongooseFilter.length > 0 && !lastFatchedOfferId) {
       offers = await Offer.find({
         $or: mongooseFilter,
-      }).limit(ITEMS_PER_PAGE);
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && lastFatchedOfferId) {
       offers = await Offer.find({
-        _id: { $gt: lastFatchedOfferId.toString() },
-      }).limit(ITEMS_PER_PAGE);
+        _id: { $lt: lastFatchedOfferId.toString() },
+      })
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && !lastFatchedOfferId) {
-      offers = await Offer.find().limit(ITEMS_PER_PAGE);
+      offers = await Offer.find()
+        .sort({ created_at: "desc" })
+        .limit(ITEMS_PER_PAGE);
     }
 
     return offers;
@@ -128,4 +138,24 @@ module.exports.getById = async function (id) {
   const offer = await Offer.findOne({ _id: id });
 
   return offer;
+};
+
+module.exports.getByUser = async function (user) {
+  if (!user?.sub || typeof user !== "object" || Array.isArray(user))
+    throw new Error("invalid user");
+
+  const offers = await Offer.find({
+    $and: [
+      { "provider.sub": user.sub },
+      {
+        $or: [
+          { state: "pending" },
+          { state: "pickedup" },
+          { state: "reserved" },
+        ],
+      },
+    ],
+  }).sort({ created_at: "desc" });
+
+  return offers;
 };

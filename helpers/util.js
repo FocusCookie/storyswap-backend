@@ -5,3 +5,12 @@ module.exports.isValidDate = (date) => {
     !isNaN(date)
   );
 };
+
+module.exports.firstDateIsPastDayComparedToSecond = (firstDate, secondDate) => {
+  if (firstDate.setHours(0, 0, 0, 0) - secondDate.setHours(0, 0, 0, 0) >= 0) {
+    //first date is in future, or it is today
+    return false;
+  }
+
+  return true;
+};

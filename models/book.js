@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Joi = require("joi");
 
 const BookSchema = new Schema(
   {
@@ -13,7 +14,7 @@ const BookSchema = new Schema(
     },
     isbn13: {
       type: String,
-      min: [9, "ISBN13 needs to be 13 chars"],
+      min: [13, "ISBN13 needs to be 13 chars"],
       max: [13, "ISBN13 can has max. 13 chars"],
       required: true,
     },
@@ -57,6 +58,15 @@ const BookSchema = new Schema(
   }
 );
 
+function validate(book) {
+  const schema = Joi.object({
+    isbn: Joi.string().min(9).max(10),
+    isbn13: Joi.string().min(13).max(13),
+  });
+
+  return schema.validate(book);
+}
+
 const Book = mongoose.model("Book", BookSchema);
 
-module.exports = Book;
+module.exports = { Book, validate };

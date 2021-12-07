@@ -5,6 +5,7 @@ const controller = require("../../../controller/reservations");
 const bookController = require("../../../controller/books");
 const offersController = require("../../../controller/offers");
 const { MongoClient } = require("mongodb");
+const bookHelper = require("../../../helpers/books");
 
 const book = {
   publisher: "Carlsen Verlag Gmbtl",
@@ -417,6 +418,125 @@ describe("Reservations Controller", () => {
       );
 
       expect(selectedReservationToCheck._id).toEqual(reservation._id);
+    });
+  });
+
+  describe("Get all user reservations", () => {
+    let booksInDatabase;
+    let offersInDatabase;
+    const validUser = {
+      sub: "auth0|user",
+      nickname: "Collector",
+      picture: "picture-url",
+    };
+
+    beforeAll(async () => {
+      //* create some books in the database to have valid book ids
+      const createBooksPromises = [];
+      bookHelper.books.forEach((book) => {
+        createBooksPromises.push(bookController.createBookInDatabase(book));
+      });
+
+      booksInDatabase = await Promise.all(createBooksPromises);
+
+      //* create some offers in the database to work with
+      const createOffersPromises = booksInDatabase.map((book, index) => {
+        const offer = {
+          provider: {
+            sub: "auth0|provider",
+            nickname: "Provider",
+            picture: "picture-url",
+          },
+          book: book._id.toString(),
+          zip: 10000 + index,
+          city: "Berlin",
+        };
+
+        return offersController.create(offer);
+      });
+
+      offersInDatabase = await Promise.all(createOffersPromises);
+
+      let createReservationsPromises = offersInDatabase.map((offer, index) => {
+        let state = "reserved";
+        if (index >= 10 && index < 15) state = "pickedup";
+        if (index >= 15 && index < 20) state = "expired";
+        if (index >= 20) state = "deleted";
+
+        const reservation = {
+          collector: validUser,
+          until: new Date("2030-01-01"),
+          offer: offer._id.toString(),
+          state: state,
+        };
+
+        return controller.create(reservation);
+      });
+
+      await Promise.all(createReservationsPromises);
+    });
+
+    it("should throw an invalid user if no user is given", async () => {
+      await expect(controller.getByUser()).rejects.toThrow(/invalid user/);
+    });
+
+    it("should throw an error the user is not an object", async () => {
+      await expect(controller.getByUser(1)).rejects.toThrow(/invalid user/gi);
+      await expect(controller.getByUser(true)).rejects.toThrow(
+        /invalid user/gi
+      );
+      await expect(controller.getByUser([])).rejects.toThrow(/invalid user/gi);
+      await expect(controller.getByUser("user")).rejects.toThrow(
+        /invalid user/gi
+      );
+    });
+
+    it("should throw an error if the given user has no sub property", async () => {
+      const invalidUser = {
+        nickname: validUser.nickname,
+        picture: validUser.picture,
+      };
+      await expect(controller.getByUser(invalidUser)).rejects.toThrow(
+        /invalid user/gi
+      );
+    });
+
+    it("should return an empty array if no offer is accossiated with the user", async () => {
+      const userWithoutReservations = {
+        sub: "auth0|noReservations",
+        nickname: "no reservation",
+        picture: "pic",
+      };
+
+      const reservation = await controller.getByUser(userWithoutReservations);
+
+      expect(reservation).toBeTruthy();
+      expect(reservation.length).toBe(0);
+    });
+
+    it("should return 20 reservations in total where 10 reservation are state reserved, 5 are  pickedup and 5 are expired for the validUser", async () => {
+      const reservations = await controller.getByUser(validUser);
+
+      const reserved = reservations.filter(
+        (reservation) => reservation.state === "reserved"
+      );
+      const expired = reservations.filter(
+        (reservation) => reservation.state === "expired"
+      );
+      const deleted = reservations.filter(
+        (reservation) => reservation.state === "deleted"
+      );
+      const pickedup = reservations.filter(
+        (reservation) => reservation.state === "pickedup"
+      );
+
+      expect(reservations).toBeTruthy();
+      expect(reservations.length).toBe(20);
+
+      expect(reserved.length).toBe(10);
+      expect(pickedup.length).toBe(5);
+      expect(expired.length).toBe(5);
+      expect(deleted.length).toBe(0);
     });
   });
 });
