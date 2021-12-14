@@ -1,5 +1,6 @@
 const debug = require("debug")("CONTROLLER:OFFERS");
 const Offer = require("../models/offer");
+const BookController = require("../controller/books");
 const mongoose = require("mongoose");
 
 const ITEMS_PER_PAGE = 10;
@@ -124,7 +125,18 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
         .limit(ITEMS_PER_PAGE);
     }
 
-    return offers;
+    const booksPromises = offers.map((offer) => {
+      return BookController.getBookById(offer.book.toString());
+    });
+
+    const booksFromOffers = await Promise.all(booksPromises);
+
+    const offersWithBooks = offers.map((offer, index) => {
+      offer.book = booksFromOffers[index];
+      return offer;
+    });
+
+    return offersWithBooks;
   } catch (error) {
     debug("%s", error);
     throw new Error(error);
@@ -136,6 +148,10 @@ module.exports.getById = async function (id) {
   if (!idIsValid) throw new Error("invalid offer id");
 
   const offer = await Offer.findOne({ _id: id });
+
+  const bookFromOffer = await BookController.getBookById(offer.book.toString());
+
+  offer.book = bookFromOffer;
 
   return offer;
 };
@@ -157,5 +173,16 @@ module.exports.getByUser = async function (user) {
     ],
   }).sort({ created_at: "desc" });
 
-  return offers;
+  const booksPromises = offers.map((offer) => {
+    return BookController.getBookById(offer.book.toString());
+  });
+
+  const booksFromOffers = await Promise.all(booksPromises);
+
+  const offersWithBooks = offers.map((offer, index) => {
+    offer.book = booksFromOffers[index];
+    return offer;
+  });
+
+  return offersWithBooks;
 };
