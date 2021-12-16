@@ -1,10 +1,12 @@
 const isbndb = require("../../../services/isbndb");
 
+const DELAY = 1500;
+
 const delayNextApiCall = () => {
   return new Promise(function (resolve, reject) {
     setTimeout(function () {
       resolve(true);
-    }, 1500);
+    }, DELAY);
   });
 };
 

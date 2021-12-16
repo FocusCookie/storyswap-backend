@@ -13,6 +13,7 @@ const OfferSchema = new Schema(
       ref: "Book",
       required: true,
     },
+    coordinates: { type: [Number] },
     zip: {
       type: Number,
       required: true,
@@ -33,6 +34,10 @@ const OfferSchema = new Schema(
     reservation: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Reservation",
+    },
+    postalcode: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Postalcode",
     },
   },
   {
