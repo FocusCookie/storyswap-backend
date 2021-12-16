@@ -19,5 +19,8 @@
   },
   "isbndb": {
     "apiKey": "ISBN_DB_API_KEY"
+  },
+  "mapbox": {
+    "apiKey": "MAPBOX_TOKEN"
   }
 }
