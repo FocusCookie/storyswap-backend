@@ -448,7 +448,7 @@ describe("Reservations Controller", () => {
             picture: "picture-url",
           },
           book: book._id.toString(),
-          zip: 10000 + index,
+          zip: 10409,
           city: "Berlin",
         };
 

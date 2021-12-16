@@ -156,7 +156,7 @@ describe("Offers Controller", () => {
     });
 
     it("should update the offer city with the given update city", async () => {
-      const update = { city: "Hamburg" };
+      const update = { zip: 22605, city: "Hamburg" };
       const updatedOffer = await controller.update(
         offerInDatabase._id.toString(),
         update
@@ -186,7 +186,7 @@ describe("Offers Controller", () => {
             picture: "picture-url",
           },
           book: "id",
-          zip: 10000 + index,
+          zip: 10409,
           city: "Berlin",
         };
 
@@ -200,7 +200,10 @@ describe("Offers Controller", () => {
       await controller.update(offersInDatabase[0], { state: "reserved" });
       await controller.update(offersInDatabase[1], { state: "pickedup" });
       await controller.update(offersInDatabase[2], { state: "deleted" });
-      await controller.update(offersInDatabase[3], { city: "New York" });
+      await controller.update(offersInDatabase[3], {
+        zip: 80333,
+        city: "München",
+      });
     });
 
     it("should return the latest ten offers from the offers collection if no filter was applied", async () => {
@@ -245,9 +248,9 @@ describe("Offers Controller", () => {
         expect(offers.length).toBe(1);
       });
 
-      it("should return one offer with city New York", async () => {
+      it("should return one offer with city München", async () => {
         const offers = await controller.get({
-          city: "New York",
+          city: "München",
         });
 
         expect(offers.length).toBe(1);
@@ -298,7 +301,7 @@ describe("Offers Controller", () => {
             picture: "picture-url",
           },
           book: "id",
-          zip: 10000 + index,
+          zip: 10409,
           city: "Berlin",
         };
 
@@ -312,7 +315,10 @@ describe("Offers Controller", () => {
       await controller.update(offersInDatabase[0], { state: "reserved" });
       await controller.update(offersInDatabase[1], { state: "pickedup" });
       await controller.update(offersInDatabase[2], { state: "deleted" });
-      await controller.update(offersInDatabase[3], { city: "New York" });
+      await controller.update(offersInDatabase[3], {
+        zip: 80333,
+        city: "München",
+      });
     });
 
     it("should throw an error if no id was given", async () => {
@@ -372,7 +378,7 @@ describe("Offers Controller", () => {
         const offer = {
           provider: validUser,
           book: book._id.toString(),
-          zip: 10000 + index,
+          zip: 10409,
           city: "Berlin",
           state: state,
         };

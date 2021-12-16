@@ -1,6 +1,7 @@
 const debug = require("debug")("CONTROLLER:OFFERS");
 const Offer = require("../models/offer");
 const BookController = require("../controller/books");
+const PostalcodeController = require("../controller/postalcodes");
 const mongoose = require("mongoose");
 
 const ITEMS_PER_PAGE = 10;
@@ -9,6 +10,17 @@ module.exports.create = async function (offer) {
   try {
     if (!offer || typeof offer !== "object" || Array.isArray(offer))
       throw new Error("invalid offer");
+
+    const bookExists = await BookController.getBookById(offer.book);
+    if (!bookExists) throw new Error("No book found with id: ", offer.book);
+
+    // check if postal code exists for given zip and city
+    const postalcode = await PostalcodeController.createWithZipAndCity(
+      offer.zip,
+      offer.city
+    );
+
+    offer.coordinates = postalcode.coordinates;
 
     const newOffer = new Offer(offer);
 
@@ -128,7 +140,6 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
     const booksPromises = offers.map((offer) => {
       return BookController.getBookById(offer.book.toString());
     });
-
     const booksFromOffers = await Promise.all(booksPromises);
 
     const offersWithBooks = offers.map((offer, index) => {

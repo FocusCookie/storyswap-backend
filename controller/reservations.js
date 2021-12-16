@@ -1,5 +1,6 @@
 const debug = require("debug")("CONTROLLER:RESERVATIONS");
 const Reservation = require("../models/reservation");
+const OfferController = require("../controller/offers");
 const { isValidDate } = require("../helpers/util");
 const mongoose = require("mongoose");
 
@@ -174,5 +175,15 @@ module.exports.getByUser = async (user) => {
     ],
   });
 
-  return reservations;
+  const offersPromises = reservations.map((reservation) => {
+    return OfferController.getById(reservation.offer);
+  });
+  const offersFromReservations = await Promise.all(offersPromises);
+
+  const reservationsWithOffers = reservations.map((reservation, index) => {
+    reservation.offer = offersFromReservations[index];
+    return reservation;
+  });
+
+  return reservationsWithOffers;
 };
