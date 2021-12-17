@@ -1,6 +1,7 @@
 const debug = require("debug")("CONTROLLER:OFFERS");
 const Offer = require("../models/offer");
 const BookController = require("../controller/books");
+const ReservationController = require("../controller/reservations");
 const PostalcodeController = require("../controller/postalcodes");
 const mongoose = require("mongoose");
 
@@ -187,13 +188,23 @@ module.exports.getByUser = async function (user) {
   const booksPromises = offers.map((offer) => {
     return BookController.getBookById(offer.book.toString());
   });
-
   const booksFromOffers = await Promise.all(booksPromises);
 
-  const offersWithBooks = offers.map((offer, index) => {
+  const reservationsPromises = offers.map((offer) => {
+    if (offer.reservation)
+      return ReservationController.getById(offer.reservation);
+    return false;
+  });
+  const reservationsFromOffer = await Promise.all(reservationsPromises);
+
+  const offersWithBooksAndReservation = offers.map((offer, index) => {
+    if (reservationsFromOffer[index]) {
+      offer.reservation = reservationsFromOffer[index];
+    }
     offer.book = booksFromOffers[index];
+
     return offer;
   });
 
-  return offersWithBooks;
+  return offersWithBooksAndReservation;
 };
