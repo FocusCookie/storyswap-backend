@@ -176,11 +176,7 @@ module.exports.getByUser = async function (user) {
     $and: [
       { "provider.sub": user.sub },
       {
-        $or: [
-          { state: "pending" },
-          { state: "pickedup" },
-          { state: "reserved" },
-        ],
+        $or: [{ state: "pending" }, { state: "reserved" }],
       },
     ],
   }).sort({ created_at: "desc" });
