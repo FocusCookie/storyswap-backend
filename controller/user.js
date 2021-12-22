@@ -87,3 +87,5 @@ module.exports.updateUser = async (userSub, update) => {
     throw new Error(error);
   }
 };
+
+//TODO: implement deleteUser and change password

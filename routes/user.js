@@ -45,4 +45,6 @@ router.patch("/metadata", async (req, res, next) => {
   }
 });
 
+//TODO implement patch /email /nickname /name /delete /change-password
+
 module.exports = router;
