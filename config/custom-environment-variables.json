@@ -8,7 +8,11 @@
     "clientId": "AUTH0_CLIENT_ID",
     "domain": "AUTH0_DOMAIN",
     "clientSecret": "AUTH0_CLIENT_SECRET",
-    "callbackURL": "AUTH0_CALLBACK_URL"
+    "callbackURL": "AUTH0_CALLBACK_URL",
+    "management": {
+      "clientId": "AUTH0_MANAGEMENT_CLIENT_ID",
+      "clientSecret": "AUTH0_MANAGEMENT_CLIENT_SECRET"
+    }
   },
   "database": {
     "host": "DB_HOST",
