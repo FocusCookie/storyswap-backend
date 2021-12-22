@@ -8,6 +8,7 @@ router.get("/", async (req, res, next) => {
   try {
     const user = req.user;
     const reservations = await controller.getByUser(user);
+    //TODO filter out the delted and pickedup
     res.send(reservations);
   } catch (error) {
     debug("%s", errror);

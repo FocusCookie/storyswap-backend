@@ -166,7 +166,11 @@ module.exports.getByUser = async (user) => {
     $and: [
       { "collector.sub": user.sub },
       {
-        $or: [{ state: "reserved" }, { state: "expired" }],
+        $or: [
+          { state: "reserved" },
+          { state: "expired" },
+          { state: "pickedup" },
+        ],
       },
     ],
   });

@@ -13,9 +13,75 @@ var auth0 = new ManagementClient({
 
 module.exports.getUserProfile = async (userSub) => {
   try {
-    // const user = await auth0.getUser({ id: userSub });
+    if (!userSub || typeof userSub !== "string")
+      throw new TypeError("invalid userSub");
 
-    return false;
+    const userprofile = await auth0.getUser({ id: userSub });
+
+    return userprofile;
+  } catch (error) {
+    debug("%s", error);
+    throw new Error(error);
+  }
+};
+
+module.exports.getUserMetadata = async (userSub) => {
+  try {
+    const userprofile = await this.getUserProfile(userSub);
+
+    return userprofile.user_metadata;
+  } catch (error) {
+    debug("%s", error);
+    throw new Error(error);
+  }
+};
+
+module.exports.updateUserMetadata = async (userSub, metadata) => {
+  try {
+    if (!userSub || typeof userSub !== "string")
+      throw new TypeError("invalid userSub");
+
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata))
+      throw new TypeError("invalid metadata");
+
+    const currentMetadata = await this.getUserMetadata(userSub);
+
+    const updatedUser = await auth0.updateUserMetadata(
+      { id: userSub },
+      { ...currentMetadata, ...metadata }
+    );
+
+    return updatedUser.user_metadata;
+  } catch (error) {
+    debug("%s", error);
+    throw new Error(error);
+  }
+};
+
+module.exports.updateUser = async (userSub, update) => {
+  try {
+    if (!userSub || typeof userSub !== "string")
+      throw new TypeError("invalid userSub");
+
+    if (!update || typeof update !== "object" || Array.isArray(update))
+      throw new TypeError("invalid update");
+
+    const currentProfile = await this.getUserProfile(userSub);
+
+    //* not allowed in the update
+    delete currentProfile.logins_count;
+    delete currentProfile.last_login;
+    delete currentProfile.last_ip;
+    delete currentProfile.user_id;
+    delete currentProfile.updated_at;
+    delete currentProfile.identities;
+    delete currentProfile.created_at;
+
+    const validUpdate = { ...currentProfile, ...update };
+
+    const updatedUser = await auth0.updateUser({ id: userSub }, validUpdate);
+
+    return updatedUser;
   } catch (error) {
     debug("%s", error);
     throw new Error(error);

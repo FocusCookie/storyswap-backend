@@ -26,5 +26,8 @@
   },
   "mapbox": {
     "apiKey": "MAPBOX_TOKEN"
+  },
+  "user": {
+    "userSub": "USER_SUB"
   }
 }
