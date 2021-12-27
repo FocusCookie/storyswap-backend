@@ -28,6 +28,7 @@
     "apiKey": "MAPBOX_TOKEN"
   },
   "user": {
-    "userSub": "USER_SUB"
+    "userSub": "USER_SUB",
+    "userEmail": "USER_EMAIL"
   }
 }

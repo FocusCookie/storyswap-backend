@@ -17,6 +17,20 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.patch("/", async (req, res, next) => {
+  try {
+    const userSub = req.user.sub;
+    const userPatch = req.body;
+
+    const updatedUser = await controller.updateUser(userSub, userPatch);
+
+    res.send(updatedUser);
+  } catch (error) {
+    debug("%s", error);
+    next(error);
+  }
+});
+
 router.get("/metadata", async (req, res, next) => {
   try {
     const userSub = req.user.sub;
@@ -45,14 +59,18 @@ router.patch("/metadata", async (req, res, next) => {
   }
 });
 
-router.patch("/", async (req, res, next) => {
+router.patch("/requestChangePasswordEmail", async (req, res, next) => {
   try {
     const userSub = req.user.sub;
-    const userPatch = req.body;
 
-    const updatedUser = await controller.updateUser(userSub, userPatch);
+    const userProfile = await controller.getUserProfile(userSub);
 
-    res.send(updatedUser);
+    await controller.requestChangePasswordEmail(
+      userProfile.email,
+      userProfile.identities[0].connection
+    );
+
+    res.send("An email was sent to you with the link to change your password.");
   } catch (error) {
     debug("%s", error);
     next(error);
