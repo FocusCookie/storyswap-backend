@@ -259,4 +259,27 @@ describe("User Controller", () => {
       ).rejects.toThrow(/invalid connection/gi);
     });
   });
+
+  describe("delteUserBySub", () => {
+    it("should throw an invalid userSub error if no userSub is given", async () => {
+      await expect(controller.delteUserBySub()).rejects.toThrow(
+        /invalid userSub/gi
+      );
+    });
+
+    it("should throw an invalid typeError userSub error if the given userSub is not a string", async () => {
+      await expect(controller.delteUserBySub(123)).rejects.toThrow(
+        /invalid userSub/gi
+      );
+      await expect(controller.delteUserBySub(true)).rejects.toThrow(
+        /invalid userSub/gi
+      );
+      await expect(controller.delteUserBySub([])).rejects.toThrow(
+        /invalid userSub/gi
+      );
+      await expect(controller.delteUserBySub({})).rejects.toThrow(
+        /invalid userSub/gi
+      );
+    });
+  });
 });

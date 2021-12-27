@@ -59,7 +59,7 @@ router.patch("/metadata", async (req, res, next) => {
   }
 });
 
-router.patch("/requestChangePasswordEmail", async (req, res, next) => {
+router.post("/requestChangePasswordEmail", async (req, res, next) => {
   try {
     const userSub = req.user.sub;
 
@@ -77,6 +77,17 @@ router.patch("/requestChangePasswordEmail", async (req, res, next) => {
   }
 });
 
-//TODO implement /delete /change-password
+router.delete("/", async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    await controller.delteUserBySub(user.sub);
+
+    res.send(`${user.nickname} was successfully deleted.`);
+  } catch (error) {
+    debug("%s", error);
+    next(error);
+  }
+});
 
 module.exports = router;

@@ -9,7 +9,7 @@ const auth0Management = new ManagementClient({
   clientId: config.auth0.management.clientId,
   clientSecret: config.auth0.management.clientSecret,
   scope:
-    "read:users update:users read:users_app_metadata update:users_app_metadata delete:users_app_metadata create:users_app_metadata",
+    "read:users update:users read:users_app_metadata update:users_app_metadata delete:users_app_metadata create:users_app_metadata delete:users",
 });
 
 const AuthenticationClient = require("auth0").AuthenticationClient;
@@ -122,4 +122,16 @@ module.exports.requestChangePasswordEmail = async (email, connection) => {
   }
 };
 
-//TODO: implement deleteUser
+module.exports.delteUserBySub = async (userSub) => {
+  try {
+    if (!userSub || typeof userSub !== "string")
+      throw new TypeError("invalid userSub");
+
+    await auth0Management.deleteUser({ id: userSub });
+
+    return true;
+  } catch (error) {
+    debug("%s", error);
+    throw new Error(error);
+  }
+};
