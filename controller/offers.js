@@ -98,6 +98,7 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
             [key]: filter[key],
           });
         }
+
         if (key === "city") {
           const filterRegex = new RegExp(filter[key], "ig");
           mongooseFilter.push({
@@ -107,9 +108,11 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
       }
     }
 
+    debug("mongooseFilter ", mongooseFilter);
+
     if (mongooseFilter.length > 0 && lastFatchedOfferId) {
       offers = await Offer.find({
-        $or: mongooseFilter,
+        $and: mongooseFilter,
         $and: [{ _id: { $lt: lastFatchedOfferId.toString() } }],
       })
         .sort({ created_at: "desc" })
@@ -118,7 +121,7 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
 
     if (mongooseFilter.length > 0 && !lastFatchedOfferId) {
       offers = await Offer.find({
-        $or: mongooseFilter,
+        $and: mongooseFilter,
       })
         .sort({ created_at: "desc" })
         .limit(ITEMS_PER_PAGE);
