@@ -6,9 +6,24 @@ const reservationController = require("../controller/reservations");
 const { firstDateIsPastDayComparedToSecond } = require("../helpers/util");
 const authorization = require("../controller/authorization");
 
-router.get("/", async (req, res, next) => {
+router.post("/filter", async (req, res, next) => {
   try {
-    const offers = await offersController.get({ state: "pending" });
+    const lastFetchedOfferId = req.body.lastFetchedOfferId || null;
+    const reqFilter = req.body.filter || null;
+
+    let filter = {
+      state: "pending",
+    };
+
+    if (reqFilter) {
+      filter = { ...filter, ...reqFilter };
+    }
+
+    if (reqFilter.zip) filter.zip = parseInt(filter.zip);
+    if (reqFilter.city) filter.city = filter.city.toLowerCase();
+
+    const offers = await offersController.get(filter, lastFetchedOfferId);
+
     res.send(offers);
   } catch (error) {
     next(error);
