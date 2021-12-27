@@ -19,8 +19,8 @@ router.post("/filter", async (req, res, next) => {
       filter = { ...filter, ...reqFilter };
     }
 
-    if (reqFilter.zip) filter.zip = parseInt(filter.zip);
-    if (reqFilter.city) filter.city = filter.city.toLowerCase();
+    if (reqFilter && reqFilter.zip) filter.zip = parseInt(filter.zip);
+    if (reqFilter && reqFilter.city) filter.city = filter.city.toLowerCase();
 
     const offers = await offersController.get(filter, lastFetchedOfferId);
 
