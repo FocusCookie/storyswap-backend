@@ -3,6 +3,8 @@ const config = require("config");
 const controller = require("../../../controller/user");
 
 const VALID_USER_SUB = config.user.userSub;
+const VALID_USER_EMAIL = config.user.userEmail;
+const VALID_USER_PASSWORD = "b4bUD2V.NgjrnHo-GTft";
 
 describe("User Controller", () => {
   describe("getUserProfile", () => {
@@ -211,6 +213,73 @@ describe("User Controller", () => {
       expect(resetToDefault.nickname).toBe(defaultUserData.nickname);
       expect(resetToDefault.name).toBe(defaultUserData.name);
       expect(resetToDefault.picture).toBe(defaultUserData.picture);
+    });
+  });
+
+  describe("requestChangePasswordEmail", () => {
+    it("should throw an invalid email error if no email is given", async () => {
+      await expect(controller.requestChangePasswordEmail()).rejects.toThrow(
+        /invalid email/gi
+      );
+    });
+
+    it("should throw an invalid typeError email error if the given email is not a string", async () => {
+      await expect(controller.requestChangePasswordEmail(123)).rejects.toThrow(
+        /invalid email/gi
+      );
+      await expect(controller.requestChangePasswordEmail(true)).rejects.toThrow(
+        /invalid email/gi
+      );
+      await expect(controller.requestChangePasswordEmail([])).rejects.toThrow(
+        /invalid email/gi
+      );
+      await expect(controller.requestChangePasswordEmail({})).rejects.toThrow(
+        /invalid email/gi
+      );
+    });
+
+    it("should throw an invalid connection error if no connection is given", async () => {
+      await expect(
+        controller.requestChangePasswordEmail(VALID_USER_EMAIL)
+      ).rejects.toThrow(/invalid connection/gi);
+    });
+
+    it("should throw an invalid typeError password error if the given password is not a string", async () => {
+      await expect(
+        controller.requestChangePasswordEmail(VALID_USER_EMAIL, 123)
+      ).rejects.toThrow(/invalid connection/gi);
+      await expect(
+        controller.requestChangePasswordEmail(VALID_USER_EMAIL, true)
+      ).rejects.toThrow(/invalid connection/gi);
+      await expect(
+        controller.requestChangePasswordEmail(VALID_USER_EMAIL, [])
+      ).rejects.toThrow(/invalid connection/gi);
+      await expect(
+        controller.requestChangePasswordEmail(VALID_USER_EMAIL, {})
+      ).rejects.toThrow(/invalid connection/gi);
+    });
+  });
+
+  describe("delteUserBySub", () => {
+    it("should throw an invalid userSub error if no userSub is given", async () => {
+      await expect(controller.delteUserBySub()).rejects.toThrow(
+        /invalid userSub/gi
+      );
+    });
+
+    it("should throw an invalid typeError userSub error if the given userSub is not a string", async () => {
+      await expect(controller.delteUserBySub(123)).rejects.toThrow(
+        /invalid userSub/gi
+      );
+      await expect(controller.delteUserBySub(true)).rejects.toThrow(
+        /invalid userSub/gi
+      );
+      await expect(controller.delteUserBySub([])).rejects.toThrow(
+        /invalid userSub/gi
+      );
+      await expect(controller.delteUserBySub({})).rejects.toThrow(
+        /invalid userSub/gi
+      );
     });
   });
 });
