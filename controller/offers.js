@@ -79,6 +79,7 @@ module.exports.update = async function (id, update) {
   }
 };
 
+//TODO: only which are not from the requetsing user!
 module.exports.get = async function (filter, lastFatchedOfferId) {
   try {
     const mongooseFilter = [];
@@ -108,14 +109,12 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
       }
     }
 
-    debug("mongooseFilter ", mongooseFilter);
-
     if (mongooseFilter.length > 0 && lastFatchedOfferId) {
       offers = await Offer.find({
         $and: mongooseFilter,
         $and: [{ _id: { $lt: lastFatchedOfferId.toString() } }],
       })
-        .sort({ created_at: "desc" })
+        .sort({ _id: -1 })
         .limit(ITEMS_PER_PAGE);
     }
 
@@ -123,7 +122,7 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
       offers = await Offer.find({
         $and: mongooseFilter,
       })
-        .sort({ created_at: "desc" })
+        .sort({ _id: -1 })
         .limit(ITEMS_PER_PAGE);
     }
 
@@ -131,14 +130,12 @@ module.exports.get = async function (filter, lastFatchedOfferId) {
       offers = await Offer.find({
         _id: { $lt: lastFatchedOfferId.toString() },
       })
-        .sort({ created_at: "desc" })
+        .sort({ _id: -1 })
         .limit(ITEMS_PER_PAGE);
     }
 
     if (!filter && !lastFatchedOfferId) {
-      offers = await Offer.find()
-        .sort({ created_at: "desc" })
-        .limit(ITEMS_PER_PAGE);
+      offers = await Offer.find().sort({ _id: -1 }).limit(ITEMS_PER_PAGE);
     }
 
     const booksPromises = offers.map((offer) => {
