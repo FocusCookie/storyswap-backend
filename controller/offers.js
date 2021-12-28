@@ -79,6 +79,7 @@ module.exports.update = async function (id, update) {
   }
 };
 
+//TODO: only which are not from the requetsing user!
 module.exports.get = async function (filter, lastFatchedOfferId) {
   try {
     const mongooseFilter = [];
