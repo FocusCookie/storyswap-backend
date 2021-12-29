@@ -24,7 +24,11 @@ router.post("/filter", async (req, res, next) => {
 
     const offers = await offersController.get(filter, lastFetchedOfferId);
 
-    res.send(offers);
+    const offersNotFromUser = offers.filter(
+      (offer) => offer.provider.sub !== req.user.sub
+    );
+
+    res.send(offersNotFromUser);
   } catch (error) {
     next(error);
   }
@@ -34,7 +38,12 @@ router.get("/my", async (req, res, next) => {
   try {
     const user = req.user;
     const offers = await offersController.getByUser(user);
-    res.send(offers);
+
+    const withoutPickedupOffers = offers.filter(
+      (offer) => offer.state !== "pickedup"
+    );
+
+    res.send(withoutPickedupOffers);
   } catch (error) {
     debug("%s", err);
     next(error);

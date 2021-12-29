@@ -8,8 +8,12 @@ router.get("/", async (req, res, next) => {
   try {
     const user = req.user;
     const reservations = await controller.getByUser(user);
-    //TODO filter out the delted and pickedup
-    res.send(reservations);
+
+    const onlyPendingReservations = reservations.filter(
+      (reservation) => reservation.state === "reserved"
+    );
+
+    res.send(onlyPendingReservations);
   } catch (error) {
     debug("%s", errror);
     next(error);
