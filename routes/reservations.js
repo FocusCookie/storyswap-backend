@@ -39,6 +39,4 @@ router.post("/:id/pickedup", async (req, res, next) => {
   }
 });
 
-// post /:id/pickedup -> update as pickedup
-
 module.exports = router;
