@@ -15,7 +15,7 @@ router.get("/", async (req, res, next) => {
 
     res.send(onlyPendingReservations);
   } catch (error) {
-    debug("%s", errror);
+    debug("%s", error);
     next(error);
   }
 });

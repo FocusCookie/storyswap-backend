@@ -206,4 +206,30 @@ router.post("/:id/pickedup", async (req, res, next) => {
   }
 });
 
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const user = req.user;
+
+    const offer = await offersController.getById(id);
+
+    if (offer.provider.sub !== user.sub) {
+      throw {
+        status: 403,
+        message: "not authorized todelete an offer of another user",
+      };
+    }
+
+    if (offer.reservation) {
+      await reservationController.delete(offer.reservation._id);
+    }
+
+    await offersController.update(id, { state: "deleted" });
+
+    res.send(`Offer with ID: ${offer._id} successfully deleted.`);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

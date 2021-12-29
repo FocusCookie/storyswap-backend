@@ -1,5 +1,6 @@
 const debug = require("debug")("CONTROLLER:RESERVATIONS");
 const Reservation = require("../models/reservation");
+const Offer = require("../models/offer");
 const OfferController = require("../controller/offers");
 const { isValidDate } = require("../helpers/util");
 const mongoose = require("mongoose");
@@ -8,6 +9,7 @@ const ITEMS_PER_PAGE = 10;
 
 module.exports.create = async function (reservation) {
   try {
+    debug(reservation);
     if (
       !reservation ||
       typeof reservation !== "object" ||
@@ -186,4 +188,19 @@ module.exports.getByUser = async (user) => {
   });
 
   return reservationsWithOffers;
+};
+
+module.exports.delete = async function (id) {
+  try {
+    const reservationToDelete = await Reservation.findOne({ _id: id });
+    if (!reservationToDelete)
+      throw new Error("No reservation found with id: ", id);
+
+    await reservationToDelete.remove();
+
+    return true;
+  } catch (error) {
+    debug("%s", error);
+    throw new Error(error);
+  }
 };
