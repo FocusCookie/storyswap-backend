@@ -68,8 +68,7 @@ module.exports.getByUserSub = async function (sub) {
       users: { $elemMatch: { sub: sub } },
     }).sort({ created_at: "desc" });
 
-    if (chats.length === 0)
-      throw new Error("No chat found with user sub: ", sub);
+    if (chats.length === 0) return [];
 
     return chats;
   } catch (error) {

@@ -32,6 +32,45 @@ router.get("/my", async (req, res, next) => {
   }
 });
 
+router.get("/sub/:sub", async (req, res, next) => {
+  try {
+    const userSub = req.user.sub;
+    const receiverSub = req.params.sub;
+
+    const usersChats = await chatsController.getByUserSub(userSub);
+
+    const chatWithReceiver = usersChats.filter(
+      (chat) => chat.users[1].sub === receiverSub
+    );
+
+    return res.send(
+      chatWithReceiver.length !== 0 ? chatWithReceiver[0] : false
+    );
+  } catch (error) {
+    debug("%s", error);
+    next(err);
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const user = req.user;
+    const id = req.params.id;
+
+    const chat = await chatsController.getByChatId(id);
+    if (chat.users[0].sub !== user.sub && chat.users[1].sub !== user.sub)
+      throw {
+        status: 403,
+        message: "Your are not a member of the chat",
+      };
+
+    return res.send(chat);
+  } catch (error) {
+    debug("%s", error);
+    next({ status: 400, message: error.message });
+  }
+});
+
 router.get("/:id/messages", async (req, res, next) => {
   try {
     const user = req.user;
@@ -47,6 +86,27 @@ router.get("/:id/messages", async (req, res, next) => {
     const messages = await messagesController.getByChatId(id);
 
     return res.send(messages);
+  } catch (error) {
+    debug("%s", error);
+    next({ status: 400, message: error.message });
+  }
+});
+
+router.get("/:id/last-message", async (req, res, next) => {
+  try {
+    const user = req.user;
+    const id = req.params.id;
+
+    const chat = await chatsController.getByChatId(id);
+    if (chat.users[0].sub !== user.sub && chat.users[1].sub !== user.sub)
+      throw {
+        status: 403,
+        message: "Your are not a member of the chat",
+      };
+
+    const lastMessage = await messagesController.getLasMessageOfChat(id);
+
+    return res.send(lastMessage);
   } catch (error) {
     debug("%s", error);
     next({ status: 400, message: error.message });
