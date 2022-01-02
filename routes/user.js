@@ -35,7 +35,9 @@ router.get("/metadata", async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const metadata = await controller.getUserMetadata(userSub);
-    res.send(metadata);
+    debug("metadata", metadata);
+
+    res.send(metadata ? metadata : {});
   } catch (error) {
     debug("%s", error);
     next(error);

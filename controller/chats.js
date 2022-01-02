@@ -12,9 +12,7 @@ module.exports.create = async function (users) {
       Array.isArray(users[0]) ||
       Array.isArray(users[1]) ||
       !users[0].sub ||
-      !users[0].nickname ||
-      !users[1].sub ||
-      !users[1].nickname
+      !users[1].sub
     )
       throw new Error("invalid users");
 

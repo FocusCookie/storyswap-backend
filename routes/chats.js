@@ -40,7 +40,8 @@ router.get("/sub/:sub", async (req, res, next) => {
     const usersChats = await chatsController.getByUserSub(userSub);
 
     const chatWithReceiver = usersChats.filter(
-      (chat) => chat.users[1].sub === receiverSub
+      (chat) =>
+        chat.users[0].sub === receiverSub || chat.users[1].sub === receiverSub
     );
 
     return res.send(
