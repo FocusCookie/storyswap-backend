@@ -9,7 +9,6 @@ const ITEMS_PER_PAGE = 10;
 
 module.exports.create = async function (reservation) {
   try {
-    debug(reservation);
     if (
       !reservation ||
       typeof reservation !== "object" ||
