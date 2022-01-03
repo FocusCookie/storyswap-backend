@@ -61,7 +61,7 @@ router.patch("/metadata", async (req, res, next) => {
   }
 });
 
-router.post("/requestChangePasswordEmail", async (req, res, next) => {
+router.post("/password", async (req, res, next) => {
   try {
     const userSub = req.user.sub;
 
