@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:5.0.3
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - db:/data/db
+  app:
+    depends_on:
+      - mongodb
+    build: .
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - 80:$SERVER_HTTP_PORT
+    environment:
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - SERVER_HOST=$SERVER_HOST
+      - SERVER_HTTP_PORT=$SERVER_HTTP_PORT
+      - ISBN_DB_API_KEY=$ISBN_DB_API_KEY
+      - AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID
+      - AUTH0_DOMAIN=$AUTH0_DOMAIN
+      - AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET
+      - AUTH0_MANAGEMENT_CLIENT_ID=$AUTH0_MANAGEMENT_CLIENT_ID
+      - AUTH0_MANAGEMENT_CLIENT_SECRET=$AUTH0_MANAGEMENT_CLIENT_SECRET
+      - MAPBOX_TOKEN=$MAPBOX_TOKEN
+    stdin_open: true
+    tty: true
+volumes:
+  db:

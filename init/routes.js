@@ -13,12 +13,11 @@ const reservations = require("../routes/reservations");
 const chats = require("../routes/chats");
 const messages = require("../routes/messages");
 const user = require("../routes/user");
-// const indexRouter = require("../routes/index");
 
 module.exports = function (app) {
   app.use(express.json());
   app.use(helmet());
-  app.use(cors()); //TODO: remove if frontend is hosted via backend, otherwise restrict cors to a whitelist
+  //app.use(cors()); //* enable for dev mode when frontend is on a seperate url
   app.use(morgan("tiny"));
   app.use(
     expressCspHeader({
@@ -44,8 +43,6 @@ module.exports = function (app) {
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../client/index.html"));
   });
-
-  // app.use("/", indexRouter);
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {
