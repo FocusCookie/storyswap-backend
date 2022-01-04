@@ -4,6 +4,7 @@ const config = require("config");
 const debug = require("debug")("INIT:MONGODB");
 
 debug("DB NAME ", config.database.name);
+debug("DB HOST ", config.database.host);
 
 mongoose
   .connect(config.database.host, {
@@ -35,6 +36,6 @@ mongoose.connection.on("disconnected", () => {
 // Close the mongoose connection befoe shutting down the application
 process.on("SIGINT", async () => {
   await mongoose.connection.close();
-  debug("Mongoose is deconnected from MongoDB.");
+  debug("Terminated - Mongoose is deconnected from MongoDB.");
   process.exit(0);
 });
