@@ -3,8 +3,10 @@ const router = express.Router();
 const debug = require("debug")("ROUTES:RESERVATIONS");
 const controller = require("../controller/reservations");
 const authorization = require("../controller/authorization");
+const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 
-router.get("/", async (req, res, next) => {
+router.get("/", auth, prettyUser, async (req, res, next) => {
   try {
     const user = req.user;
     const reservations = await controller.getByUser(user);
@@ -20,7 +22,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/:id/pickedup", async (req, res, next) => {
+router.post("/:id/pickedup", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const user = req.user;

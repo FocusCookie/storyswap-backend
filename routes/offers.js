@@ -5,8 +5,10 @@ const offersController = require("../controller/offers");
 const reservationController = require("../controller/reservations");
 const { firstDateIsPastDayComparedToSecond } = require("../helpers/util");
 const authorization = require("../controller/authorization");
+const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 
-router.post("/filter", async (req, res, next) => {
+router.post("/filter", auth, prettyUser, async (req, res, next) => {
   try {
     const lastFetchedOfferId = req.body.lastFetchedOfferId || null;
     const reqFilter = req.body.filter || null;
@@ -34,7 +36,7 @@ router.post("/filter", async (req, res, next) => {
   }
 });
 
-router.get("/my", async (req, res, next) => {
+router.get("/my", auth, prettyUser, async (req, res, next) => {
   try {
     const user = req.user;
     const offers = await offersController.getByUser(user);
@@ -45,12 +47,12 @@ router.get("/my", async (req, res, next) => {
 
     res.send(withoutPickedupOffers);
   } catch (error) {
-    debug("%s", err);
+    debug("%s", error);
     next(error);
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const offer = await offersController.getById(id);
@@ -62,7 +64,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, prettyUser, async (req, res, next) => {
   try {
     const provider = {
       sub: req.user.sub,
@@ -83,7 +85,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/:id/reserve", async (req, res, next) => {
+router.post("/:id/reserve", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const user = req.user;
@@ -117,7 +119,7 @@ router.post("/:id/reserve", async (req, res, next) => {
   }
 });
 
-router.post("/:id/unreserve", async (req, res, next) => {
+router.post("/:id/unreserve", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const user = req.user;
@@ -172,7 +174,7 @@ router.post("/:id/unreserve", async (req, res, next) => {
   }
 });
 
-router.post("/:id/pickedup", async (req, res, next) => {
+router.post("/:id/pickedup", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const user = req.user;
@@ -206,7 +208,7 @@ router.post("/:id/pickedup", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const user = req.user;

@@ -2,14 +2,13 @@ require("dotenv").config();
 const config = require("config");
 const debug = require("debug")("CONTROLLER:USER");
 const { isValidEmail } = require("../helpers/util");
-
 const offerController = require("../controller/offers");
 const reservationController = require("../controller/reservations");
-
 const Offer = require("../models/offer");
 const Reservation = require("../models/reservation");
-
 const ManagementClient = require("auth0").ManagementClient;
+const AuthenticationClient = require("auth0").AuthenticationClient;
+
 const auth0Management = new ManagementClient({
   domain: config.auth0.domain,
   clientId: config.auth0.management.clientId,
@@ -18,7 +17,6 @@ const auth0Management = new ManagementClient({
     "read:users update:users read:users_app_metadata update:users_app_metadata delete:users_app_metadata create:users_app_metadata delete:users",
 });
 
-const AuthenticationClient = require("auth0").AuthenticationClient;
 const auth0Authentication = new AuthenticationClient({
   domain: config.auth0.domain,
   clientId: config.auth0.management.clientId,

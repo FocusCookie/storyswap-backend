@@ -3,8 +3,10 @@ const router = express.Router();
 const debug = require("debug")("ROUTES:MESSAGES");
 const chatsController = require("../controller/chats");
 const messagesController = require("../controller/messages");
+const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const { content, chat } = req.body;

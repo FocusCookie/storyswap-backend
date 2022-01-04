@@ -4,8 +4,10 @@ const express = require("express");
 const router = express.Router();
 const debug = require("debug")("ROUTES:USER-PROXY");
 const controller = require("../controller/user");
+const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 
-router.get("/", async (req, res, next) => {
+router.get("/", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const profile = await controller.getUserProfile(userSub);
@@ -17,7 +19,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.patch("/", async (req, res, next) => {
+router.patch("/", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const userPatch = req.body;
@@ -31,7 +33,7 @@ router.patch("/", async (req, res, next) => {
   }
 });
 
-router.get("/metadata", async (req, res, next) => {
+router.get("/metadata", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const metadata = await controller.getUserMetadata(userSub);
@@ -44,7 +46,7 @@ router.get("/metadata", async (req, res, next) => {
   }
 });
 
-router.patch("/metadata", async (req, res, next) => {
+router.patch("/metadata", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const metadata = req.body;
@@ -61,7 +63,7 @@ router.patch("/metadata", async (req, res, next) => {
   }
 });
 
-router.post("/password", async (req, res, next) => {
+router.post("/password", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
 
@@ -79,7 +81,7 @@ router.post("/password", async (req, res, next) => {
   }
 });
 
-router.delete("/", async (req, res, next) => {
+router.delete("/", auth, prettyUser, async (req, res, next) => {
   try {
     const user = req.user;
 

@@ -3,8 +3,10 @@ const router = express.Router();
 const debug = require("debug")("ROUTES:CHATS");
 const chatsController = require("../controller/chats");
 const messagesController = require("../controller/messages");
+const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, prettyUser, async (req, res, next) => {
   try {
     const sender = req.user;
     const receiver = req.body.receiver;
@@ -20,7 +22,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/my", async (req, res, next) => {
+router.get("/my", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const chats = await chatsController.getByUserSub(userSub);
@@ -32,7 +34,7 @@ router.get("/my", async (req, res, next) => {
   }
 });
 
-router.get("/sub/:sub", async (req, res, next) => {
+router.get("/sub/:sub", auth, prettyUser, async (req, res, next) => {
   try {
     const userSub = req.user.sub;
     const receiverSub = req.params.sub;
@@ -53,7 +55,7 @@ router.get("/sub/:sub", async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", auth, prettyUser, async (req, res, next) => {
   try {
     const user = req.user;
     const id = req.params.id;
@@ -72,7 +74,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/:id/messages", async (req, res, next) => {
+router.get("/:id/messages", auth, prettyUser, async (req, res, next) => {
   try {
     const user = req.user;
     const id = req.params.id;
@@ -93,7 +95,7 @@ router.get("/:id/messages", async (req, res, next) => {
   }
 });
 
-router.get("/:id/last-message", async (req, res, next) => {
+router.get("/:id/last-message", auth, prettyUser, async (req, res, next) => {
   try {
     const user = req.user;
     const id = req.params.id;
@@ -114,29 +116,34 @@ router.get("/:id/last-message", async (req, res, next) => {
   }
 });
 
-router.get("/:id/messages/:lastFetchedMessageId", async (req, res, next) => {
-  try {
-    const user = req.user;
-    const id = req.params.id;
-    const lastFetchedMessageId = req.params.lastFetchedMessageId;
+router.get(
+  "/:id/messages/:lastFetchedMessageId",
+  auth,
+  prettyUser,
+  async (req, res, next) => {
+    try {
+      const user = req.user;
+      const id = req.params.id;
+      const lastFetchedMessageId = req.params.lastFetchedMessageId;
 
-    const chat = await chatsController.getByChatId(id);
-    if (chat.users[0].sub !== user.sub && chat.users[1].sub !== user.sub)
-      throw {
-        status: 403,
-        message: "Your are not a member of the chat",
-      };
+      const chat = await chatsController.getByChatId(id);
+      if (chat.users[0].sub !== user.sub && chat.users[1].sub !== user.sub)
+        throw {
+          status: 403,
+          message: "Your are not a member of the chat",
+        };
 
-    const messages = await messagesController.getByChatId(
-      id,
-      lastFetchedMessageId
-    );
+      const messages = await messagesController.getByChatId(
+        id,
+        lastFetchedMessageId
+      );
 
-    return res.send(messages);
-  } catch (error) {
-    debug("%s", error);
-    next({ status: 400, message: error.message });
+      return res.send(messages);
+    } catch (error) {
+      debug("%s", error);
+      next({ status: 400, message: error.message });
+    }
   }
-});
+);
 
 module.exports = router;
