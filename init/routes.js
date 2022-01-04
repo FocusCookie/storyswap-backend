@@ -26,12 +26,12 @@ module.exports = function (app) {
   app.use(auth);
   app.use(prettyUser); // * Needs to after auth! Because in auth is the user attached to the req
 
-  app.use("/books", books);
-  app.use("/offers", offers);
-  app.use("/reservations", reservations);
-  app.use("/chats", chats);
-  app.use("/messages", messages);
-  app.use("/user", user);
+  app.use("/api/books", books);
+  app.use("/api/offers", offers);
+  app.use("/api/reservations", reservations);
+  app.use("/api/chats", chats);
+  app.use("/api/messages", messages);
+  app.use("/api/user", user);
   app.use("/", indexRouter);
 
   // catch 404 and forward to error handler
