@@ -83,7 +83,7 @@ router.delete("/", async (req, res, next) => {
   try {
     const user = req.user;
 
-    await controller.delteUserBySub(user.sub);
+    await controller.deleteUserBySub(user.sub);
 
     res.send(`${user.nickname} was successfully deleted.`);
   } catch (error) {

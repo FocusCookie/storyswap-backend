@@ -3,6 +3,12 @@ const config = require("config");
 const debug = require("debug")("CONTROLLER:USER");
 const { isValidEmail } = require("../helpers/util");
 
+const offerController = require("../controller/offers");
+const reservationController = require("../controller/reservations");
+
+const Offer = require("../models/offer");
+const Reservation = require("../models/reservation");
+
 const ManagementClient = require("auth0").ManagementClient;
 const auth0Management = new ManagementClient({
   domain: config.auth0.domain,
@@ -122,12 +128,62 @@ module.exports.requestChangePasswordEmail = async (email, connection) => {
   }
 };
 
-module.exports.delteUserBySub = async (userSub) => {
+module.exports.deleteUserBySub = async (userSub) => {
   try {
     if (!userSub || typeof userSub !== "string")
       throw new TypeError("invalid userSub");
 
     await auth0Management.deleteUser({ id: userSub });
+
+    const offersFromUser = await Offer.find({
+      $and: [
+        { "provider.sub": userSub },
+        { $or: [{ state: "pending" }, { state: "reserved" }] },
+      ],
+    });
+
+    const userReservations = await Reservation.find({
+      $and: [
+        {
+          "collector.sub": userSub,
+        },
+        { state: "reserved" },
+      ],
+    });
+
+    //* Promises to update and delete offers / reservations form the user that is deleted
+    const promiseJobs = [];
+
+    offersFromUser.forEach((offer) => {
+      // remove all offers from the user
+      promiseJobs.push(
+        offerController.update(offer._id.toString(), { state: "deleted" })
+      );
+
+      // delete reservation if there is one
+      if (offer.state === "reserved") {
+        promiseJobs.push(
+          reservationController.delete(offer.reservation.toString())
+        );
+      }
+    });
+
+    userReservations.forEach((reservation) => {
+      // delete users reservations
+      promiseJobs.push(
+        reservationController.delete(reservation._id.toString())
+      );
+
+      // set the offers back to pending
+      promiseJobs.push(
+        offerController.update(reservation.offer.toString(), {
+          state: "pending",
+          reservation: null,
+        })
+      );
+    });
+
+    await Promise.all(promiseJobs);
 
     return true;
   } catch (error) {

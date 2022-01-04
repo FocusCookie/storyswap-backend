@@ -22,7 +22,7 @@ const BookSchema = new Schema(
     binding: { type: String },
     publisher: { type: String },
     language: { type: String },
-    date_published: { type: Date },
+    date_published: { type: String },
     edition: { type: String },
     pages: { type: Number },
     dimensions: { type: String },

@@ -20,7 +20,7 @@ module.exports.getBookByIsbnOrIsbn13 = async (isbnOrIsbn13) => {
     return book;
   } catch (error) {
     const message = error.response.status === 404 ? "not found" : error.message;
-    debug("%s", error);
+    debug("%s", error.response.data);
     throw new Error(`ISBN API: ${message}`);
   }
 };

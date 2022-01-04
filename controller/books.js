@@ -56,11 +56,11 @@ module.exports.createBookWithIsbnOrIsbn13 = async (isbnOrIsbn13) => {
 
     const bookFromIsbnDb = await isbndb.getBookByIsbnOrIsbn13(isbnOrIsbn13);
 
+    debug("bookFromIsbnDb", bookFromIsbnDb);
+
     const bookStoredInDatabase = await this.createBookInDatabase(
       bookFromIsbnDb
     );
-
-    debug(bookStoredInDatabase);
 
     return bookStoredInDatabase;
   } catch (error) {
