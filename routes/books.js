@@ -3,9 +3,11 @@ const router = express.Router();
 const debug = require("debug")("ROUTES:BOOKS");
 const controller = require("../controller/books");
 const { validate } = require("../models/book");
+const auth = require("../middleware/auth");
+const prettyUser = require("../middleware/prettyUser.js");
 
 //TODO: Only for admins
-router.get("/", async (req, res) => {
+router.get("/", auth, prettyUser, async (req, res) => {
   try {
     const books = await controller.getBooks();
     res.send(books);
@@ -14,7 +16,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", auth, prettyUser, async (req, res, next) => {
   try {
     const id = req.params.id;
     const book = await controller.getBookById(id);
@@ -24,7 +26,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, prettyUser, async (req, res, next) => {
   try {
     const validation = validate(req.body);
     if (validation.error) throw { status: 400, message: validation.error };
