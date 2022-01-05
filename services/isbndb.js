@@ -15,12 +15,15 @@ module.exports.getBookByIsbnOrIsbn13 = async (isbnOrIsbn13) => {
       throw new Error("invalid isbn or isbn13");
 
     const response = await instance.get(`book/${isbnOrIsbn13}`);
-    const book = response.data.book;
 
-    return book;
+    //* ISBN sends an {errorMessage: } if no book was found with the given isbn
+    return response.data.book;
   } catch (error) {
-    const message = error.response.status === 404 ? "not found" : error.message;
-    debug("%s", error.response.data);
-    throw new Error(`ISBN API: ${message}`);
+    if (error.response.status === 404) {
+      return false;
+    } else {
+      debug(error);
+      throw new Error(`ISBN API: ${message}`);
+    }
   }
 };

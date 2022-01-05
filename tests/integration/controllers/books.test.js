@@ -136,10 +136,9 @@ describe("Book Controller", () => {
       ).rejects.toThrow();
     });
 
-    it("should throw an error if the given isbn was not found in db and isbnDb", async () => {
-      await expect(
-        controller.createBookWithIsbnOrIsbn13("1113322331")
-      ).rejects.toThrow(/not found/gi);
+    it("should return false if the given isbn was not found in db and isbnDb", async () => {
+      const book = await controller.createBookWithIsbnOrIsbn13("123123123");
+      expect(book).toBeFalsy();
     });
 
     it("should  return the book from the database if the book is already in the database", async () => {
