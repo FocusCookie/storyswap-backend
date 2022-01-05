@@ -66,10 +66,6 @@ module.exports.createBookWithIsbnOrIsbn13 = async (isbnOrIsbn13) => {
   } catch (error) {
     debug("%s", error);
 
-    if (error.status) {
-      throw new error();
-    }
-
     throw new Error(error);
   }
 };

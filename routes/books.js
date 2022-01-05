@@ -48,7 +48,12 @@ router.post("/", auth, prettyUser, async (req, res, next) => {
     res.send(createdBook);
   } catch (error) {
     debug("%s", error);
-    next(error);
+    res
+      .status(404)
+      .send(
+        "No book found with ISBN/13: ",
+        req.body.isbn ? req.body.isbn : req.body.isbn13
+      );
   }
 });
 
