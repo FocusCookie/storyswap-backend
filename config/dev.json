@@ -2,6 +2,7 @@
   "name": "StorySwap - Development",
   "environment": "dev",
   "database": {
-    "name": "storyswap"
+    "name": "storyswap",
+    "host": "mongodb://localhost:27017"
   }
 }
