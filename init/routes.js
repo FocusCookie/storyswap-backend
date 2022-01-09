@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const cors = require("cors");
+// const cors = require("cors");
 const error = require("../middleware/error");
 const bodyParser = require("body-parser");
 const { expressCspHeader, NONE, SELF } = require("express-csp-header");
@@ -17,7 +17,7 @@ const user = require("../routes/user");
 module.exports = function (app) {
   app.use(express.json());
   app.use(helmet());
-  //app.use(cors()); //* enable for dev mode when frontend is on a seperate url
+  // app.use(cors()); //* enable for dev mode when frontend is on a seperate url
   app.use(morgan("tiny"));
   app.use(
     expressCspHeader({

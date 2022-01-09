@@ -4,14 +4,10 @@ const config = require("config");
 const debug = require("debug")("INIT:MONGODB");
 
 debug("DB NAME ", config.database.name);
-
-const host =
-  config.environment === "dev"
-    ? "mongodb://localhost:27017"
-    : config.database.host;
+debug("DB HOST ", config.database.host);
 
 mongoose
-  .connect(host, {
+  .connect(config.database.host, {
     dbName: config.database.name,
     useNewUrlParser: true,
     useUnifiedTopology: true,
