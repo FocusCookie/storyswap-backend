@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const helmet = require("helmet");
 const morgan = require("morgan");
 // const cors = require("cors");
@@ -38,11 +37,6 @@ module.exports = function (app) {
   app.use("/api/chats", chats);
   app.use("/api/messages", messages);
   app.use("/api/user", user);
-
-  app.use(express.static(path.join(__dirname, "..", "client")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/index.html"));
-  });
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {
