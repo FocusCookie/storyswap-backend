@@ -1,7 +1,7 @@
 
 # Storyswap
 
-A local booksharing app to reduce waist, overcome the current paper shortage and to declutter your bookshelf.
+A local book-sharing app to reduce waste, overcome the current paper shortage, and to declutter your bookshelf.
 
 
 ## Demo
